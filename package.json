@@ -8,7 +8,7 @@
     "prepublishOnly": "vcmplugin build",
     "build": "vcmplugin build",
     "bundle": "vcmplugin bundle",
-    "start": "vcmplugin serve",
+    "start": "vcmplugin serve --appConfig app.config.json",
     "preview": "vcmplugin preview",
     "buildStagingApp": "vcmplugin buildStagingApp",
     "lint:js": "eslint . --ext .vue,.js,.cjs,.mjs,.ts,.cts,.mts",
