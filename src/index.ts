@@ -1,4 +1,9 @@
-import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
+import type {
+  VcsPlugin,
+  VcsUiApp,
+  PluginConfigEditor,
+  LayerContentTreeItem,
+} from '@vcmap/ui';
 import { VcsModule, VcsModuleConfig } from '@vcmap/core';
 import { name, version, mapVersion } from '../package.json';
 
@@ -8,6 +13,54 @@ const LUX_THEMES_URL =
 const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
 const LUX_WMTS_URL = 'https://wmts3.geoportail.lu/mapproxy_4_v3/wmts';
 const MODULE_ID = 'catalogConfig';
+
+interface ThemeLayer {
+  id: string;
+  name: string;
+  source?: string;
+  style?: string;
+  type: 'WMS' | 'WMTS';
+  properties?: Record<string, unknown>;
+  children?: ThemeLayer[];
+}
+
+interface Theme {
+  children: ThemeLayer[];
+}
+
+interface ThemesResponse {
+  themes: Theme[];
+}
+
+interface LayerConfig {
+  id: string;
+  name: string;
+  source?: string;
+  style?: string;
+  layers: string;
+  activeOnStartup: boolean;
+  allowPicking: boolean;
+  properties?: Record<string, unknown>;
+  type: string;
+  url?: string;
+  tilingSchema?: string;
+  parameters?: {
+    format: string;
+    transparent: boolean;
+  };
+  extent?: {
+    coordinates: number[];
+    projection: {
+      epsg: string;
+    };
+  };
+}
+
+interface ContentTreeItem {
+  name: string;
+  type: string;
+  layerName: string;
+}
 
 type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
@@ -50,11 +103,12 @@ export default function plugin(
       };
       appConfig._id = 'catalogConfigWithLayers';
       if (themes && themes.themes && appConfig) {
-        appConfig.layers = [
-          ...(appConfig.layers || []),
-          ...themes.themes[0].children[0].children.map((layer) => {
+        const configDiff = { layers: [], contentTree: [] };
+
+        (themes as ThemesResponse)?.themes[0]?.children[0]?.children?.forEach(
+          (layer: ThemeLayer) => {
             if (layer && layer.type) {
-              let layerConfig = {
+              let layerConfig: LayerConfig = {
                 id: layer.id,
                 name: layer.name,
                 source: layer.source,
@@ -62,10 +116,6 @@ export default function plugin(
                 layers: layer.name,
                 activeOnStartup: false,
                 allowPicking: false,
-                // featureNS: layer.featureNS,
-                // featurePrefix: layer.featurePrefix,
-                // featureType: layer.featureType,
-                // projection: {epsg: '3857'},
                 properties: layer.properties,
                 type: `${layer.type}Layer`,
               };
@@ -75,7 +125,6 @@ export default function plugin(
                   layerConfig = {
                     ...layerConfig,
                     url: LUX_OWS_URL,
-                    // version: '1.3.0',
                     tilingSchema: 'mercator',
                     parameters: {
                       format: 'image/png',
@@ -87,7 +136,6 @@ export default function plugin(
                   layerConfig = {
                     ...layerConfig,
                     url: `${LUX_WMTS_URL}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.png`,
-                    // tilingSchema: 'mercator',
                     extent: {
                       coordinates: [-180, -85, 180, 85],
                       projection: {
@@ -99,26 +147,24 @@ export default function plugin(
                 default:
                   break;
               }
-              return layerConfig;
+              (configDiff.layers as LayerConfig[]).push(layerConfig);
             }
-            return null;
-          }),
+            (configDiff.contentTree as ContentTreeItem[]).push({
+              name: layer.name,
+              type: 'LayerContentTreeItem',
+              layerName: layer.name,
+            });
+          },
+        );
+
+        appConfig.layers = [
+          ...(appConfig.layers || []),
+          ...configDiff.layers,
         ].filter((l) => l !== null);
-        if (appConfig.contentTree) {
-          appConfig.contentTree = [
-            ...(appConfig.contentTree || []),
-            ...themes.themes[0].children[0].children.map((layer) => {
-              if (layer && layer.type) {
-                return {
-                  name: layer.name,
-                  type: 'LayerContentTreeItem',
-                  layerName: layer.name,
-                };
-              }
-              return null;
-            }),
-          ].filter((l) => l !== null);
-        }
+        appConfig.contentTree = [
+          ...(appConfig.contentTree || []),
+          ...configDiff.contentTree,
+        ].filter((l) => l !== null);
 
         const newModule = new VcsModule(appConfig);
         await vcsUiApp.addModule(newModule);
