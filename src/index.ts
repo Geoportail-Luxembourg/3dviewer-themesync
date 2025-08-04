@@ -1,11 +1,9 @@
-import type {
-  VcsPlugin,
-  VcsUiApp,
-  PluginConfigEditor,
-  LayerContentTreeItem,
-} from '@vcmap/ui';
-import { VcsModule, VcsModuleConfig } from '@vcmap/core';
+import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
+import { VcsModule } from '@vcmap/core';
+import type { VcsModuleConfig } from '@vcmap/core';
 import { name, version, mapVersion } from '../package.json';
+import type { ThemeLayer, ThemesResponse } from './model';
+import { mapLayerToConfig } from './utils';
 
 // TODO: move to plugin config
 const LUX_THEMES_URL =
@@ -13,54 +11,6 @@ const LUX_THEMES_URL =
 const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
 const LUX_WMTS_URL = 'https://wmts3.geoportail.lu/mapproxy_4_v3/wmts';
 const MODULE_ID = 'catalogConfig';
-
-interface ThemeLayer {
-  id: string;
-  name: string;
-  source?: string;
-  style?: string;
-  type: 'WMS' | 'WMTS';
-  properties?: Record<string, unknown>;
-  children?: ThemeLayer[];
-}
-
-interface Theme {
-  children: ThemeLayer[];
-}
-
-interface ThemesResponse {
-  themes: Theme[];
-}
-
-interface LayerConfig {
-  id: string;
-  name: string;
-  source?: string;
-  style?: string;
-  layers: string;
-  activeOnStartup: boolean;
-  allowPicking: boolean;
-  properties?: Record<string, unknown>;
-  type: string;
-  url?: string;
-  tilingSchema?: string;
-  parameters?: {
-    format: string;
-    transparent: boolean;
-  };
-  extent?: {
-    coordinates: number[];
-    projection: {
-      epsg: string;
-    };
-  };
-}
-
-interface ContentTreeItem {
-  name: string;
-  type: string;
-  layerName: string;
-}
 
 type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
@@ -105,55 +55,9 @@ export default function plugin(
       if (themes && themes.themes && appConfig) {
         const configDiff = { layers: [], contentTree: [] };
 
-        (themes as ThemesResponse)?.themes[0]?.children[0]?.children?.forEach(
+        (themes as ThemesResponse)?.themes[0]?.children?.forEach(
           (layer: ThemeLayer) => {
-            if (layer && layer.type) {
-              let layerConfig: LayerConfig = {
-                id: layer.id,
-                name: layer.name,
-                source: layer.source,
-                style: layer.style,
-                layers: layer.name,
-                activeOnStartup: false,
-                allowPicking: false,
-                properties: layer.properties,
-                type: `${layer.type}Layer`,
-              };
-              // TODO: handle more layer types?
-              switch (layer.type) {
-                case 'WMS':
-                  layerConfig = {
-                    ...layerConfig,
-                    url: LUX_OWS_URL,
-                    tilingSchema: 'mercator',
-                    parameters: {
-                      format: 'image/png',
-                      transparent: true,
-                    },
-                  };
-                  break;
-                case 'WMTS':
-                  layerConfig = {
-                    ...layerConfig,
-                    url: `${LUX_WMTS_URL}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.png`,
-                    extent: {
-                      coordinates: [-180, -85, 180, 85],
-                      projection: {
-                        epsg: 'EPSG:4326',
-                      },
-                    },
-                  };
-                  break;
-                default:
-                  break;
-              }
-              (configDiff.layers as LayerConfig[]).push(layerConfig);
-            }
-            (configDiff.contentTree as ContentTreeItem[]).push({
-              name: layer.name,
-              type: 'LayerContentTreeItem',
-              layerName: layer.name,
-            });
+            mapLayerToConfig(configDiff, layer, LUX_OWS_URL, LUX_WMTS_URL);
           },
         );
 
