@@ -1,6 +1,5 @@
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { VcsModule } from '@vcmap/core';
-import type { VcsModuleConfig } from '@vcmap/core';
 import { name, version, mapVersion } from '../package.json';
 import type { ThemeLayer, ThemesResponse } from './model';
 import { mapLayerToConfig } from './utils';
@@ -10,7 +9,6 @@ const LUX_THEMES_URL =
   'https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=500844b6967f4c4b9f05085f3c22da5c&background=background';
 const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
 const LUX_WMTS_URL = 'https://wmts3.geoportail.lu/mapproxy_4_v3/wmts';
-const MODULE_ID = 'catalogConfig';
 
 type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
@@ -46,33 +44,21 @@ export default function plugin(
       );
       console.log('Fetched themes:', themes);
 
-      const module = vcsUiApp.getModuleById(MODULE_ID);
-      // FIXME: contentTree should be in VcsModuleConfig type
-      const appConfig: VcsModuleConfig & { contentTree?: any[] } = {
-        ...module?.config,
-      };
-      appConfig._id = 'catalogConfigWithLayers';
-      if (themes && themes.themes && appConfig) {
-        const configDiff = { layers: [], contentTree: [] };
+      if (themes && themes.themes) {
+        const moduleConfig = {
+          _id: 'catalogConfig',
+          layers: [],
+          contentTree: [],
+        };
 
         (themes as ThemesResponse)?.themes[0]?.children?.forEach(
           (layer: ThemeLayer) => {
-            mapLayerToConfig(configDiff, layer, LUX_OWS_URL, LUX_WMTS_URL);
+            mapLayerToConfig(moduleConfig, layer, LUX_OWS_URL, LUX_WMTS_URL);
           },
         );
 
-        appConfig.layers = [
-          ...(appConfig.layers || []),
-          ...configDiff.layers,
-        ].filter((l) => l !== null);
-        appConfig.contentTree = [
-          ...(appConfig.contentTree || []),
-          ...configDiff.contentTree,
-        ].filter((l) => l !== null);
-
-        const newModule = new VcsModule(appConfig);
+        const newModule = new VcsModule(moduleConfig);
         await vcsUiApp.addModule(newModule);
-        await vcsUiApp.removeModule(MODULE_ID);
 
         console.log('App with new module', vcsUiApp);
       }

@@ -1,7 +1,7 @@
 {
   "name": "LuxConfig",
   "mapcontainer": "vcs_map_container",
-  "_id": "catalogConfig",
+  "_id": "LuxConfig",
   "startingViewpointName": "luxembourg",
   "startingMapName": "cesium",
   "startingObliqueCollectionName": "obliques",
