@@ -9,6 +9,8 @@ const LUX_THEMES_URL =
   'https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=500844b6967f4c4b9f05085f3c22da5c&background=background';
 const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
 const LUX_WMTS_URL = 'https://wmts3.geoportail.lu/mapproxy_4_v3/wmts';
+const LUX_I18N_URL =
+  'https://map.geoportail.lu/static/500844b6967f4c4b9f05085f3c22da5c/fr.json?';
 
 type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
@@ -42,7 +44,11 @@ export default function plugin(
       const themes = await fetch(LUX_THEMES_URL).then((response) =>
         response.json(),
       );
+      const translations = await fetch(LUX_I18N_URL).then((response) =>
+        response.json(),
+      );
       console.log('Fetched themes:', themes);
+      console.log('Fetched translations:', translations.fr);
 
       if (themes && themes.themes) {
         const moduleConfig = {
@@ -53,7 +59,13 @@ export default function plugin(
 
         (themes as ThemesResponse)?.themes[0]?.children?.forEach(
           (layer: ThemeLayer) => {
-            mapLayerToConfig(moduleConfig, layer, LUX_OWS_URL, LUX_WMTS_URL);
+            mapLayerToConfig(
+              moduleConfig,
+              layer,
+              LUX_OWS_URL,
+              LUX_WMTS_URL,
+              translations.fr,
+            );
           },
         );
 

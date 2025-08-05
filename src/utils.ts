@@ -6,6 +6,7 @@ export function mapLayerToConfig(
   layer: ThemeLayer,
   owsUrl: string,
   wmtsUrl: string,
+  translations: Record<string, string>,
   parentName?: string,
 ): void {
   if (layer && layer.type) {
@@ -56,7 +57,7 @@ export function mapLayerToConfig(
         ? 'NodeContentTreeItem'
         : 'LayerContentTreeItem',
     layerName: layer.name,
-    title: layer.name,
+    title: translations[layer.name] || layer.name,
     visible: true,
   });
 
@@ -65,7 +66,14 @@ export function mapLayerToConfig(
       ? `${parentName}.${layer.name}`
       : layer.name;
     layer.children.forEach((child) => {
-      mapLayerToConfig(configDiff, child, owsUrl, wmtsUrl, subParentName);
+      mapLayerToConfig(
+        configDiff,
+        child,
+        owsUrl,
+        wmtsUrl,
+        translations,
+        subParentName,
+      );
     });
   }
 }
