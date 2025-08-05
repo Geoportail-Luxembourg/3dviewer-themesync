@@ -38,7 +38,7 @@ export function mapLayerToConfig(
           ...layerConfig,
           url: `${wmtsUrl}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.png`,
           extent: {
-            coordinates: [-180, -85, 180, 85],
+            coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
               epsg: 'EPSG:4326',
             },
