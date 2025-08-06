@@ -4,6 +4,7 @@ export interface ThemeLayer {
   source?: string;
   style?: string;
   type: 'WMS' | 'WMTS';
+  imageType?: string;
   properties?: Record<string, unknown>;
   children?: ThemeLayer[];
 }

@@ -1,6 +1,10 @@
 import type { ContentTreeItem } from '@vcmap/ui';
 import type { LayerConfig, ThemeLayer } from './model';
 
+function getFormat(imageType?: string): string {
+  return imageType?.split('/')[1] || 'png';
+}
+
 export function mapLayerToConfig(
   configDiff: { layers: []; contentTree: [] },
   layer: ThemeLayer,
@@ -36,7 +40,7 @@ export function mapLayerToConfig(
       case 'WMTS':
         layerConfig = {
           ...layerConfig,
-          url: `${wmtsUrl}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.png`,
+          url: `${wmtsUrl}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(layer.imageType)}`,
           extent: {
             coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
