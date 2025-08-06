@@ -3,7 +3,7 @@ export interface ThemeLayer {
   name: string;
   source?: string;
   style?: string;
-  type: 'WMS' | 'WMTS';
+  type: 'WMS' | 'WMTS' | '3D';
   imageType?: string;
   properties?: Record<string, unknown>;
   children?: ThemeLayer[];

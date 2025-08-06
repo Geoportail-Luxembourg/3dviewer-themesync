@@ -56,6 +56,21 @@ export default function plugin(
           contentTree: [],
         };
 
+        // add 3D theme
+        (themes as ThemesResponse)?.themes[17]?.children?.forEach(
+          (layer: ThemeLayer) => {
+            mapLayerToConfig(
+              moduleConfig,
+              layer,
+              LUX_OWS_URL,
+              LUX_WMTS_URL,
+              translations.fr,
+              true,
+            );
+          },
+        );
+
+        // add main theme
         (themes as ThemesResponse)?.themes[0]?.children?.forEach(
           (layer: ThemeLayer) => {
             mapLayerToConfig(

@@ -1,6 +1,8 @@
 import type { ContentTreeItem } from '@vcmap/ui';
 import type { LayerConfig, ThemeLayer } from './model';
 
+const LUX_3D_URL = 'https://acts3.geoportail.lu/3d-data/3d-tiles';
+
 function getFormat(imageType?: string): string {
   return imageType?.split('/')[1] || 'png';
 }
@@ -11,8 +13,10 @@ export function mapLayerToConfig(
   owsUrl: string,
   wmtsUrl: string,
   translations: Record<string, string>,
+  is3D = false,
   parentName?: string,
 ): void {
+  if (is3D) layer.type = '3D';
   if (layer && layer.type) {
     let layerConfig: LayerConfig = {
       id: layer.id,
@@ -49,6 +53,13 @@ export function mapLayerToConfig(
           },
         };
         break;
+      case '3D':
+        layerConfig = {
+          ...layerConfig,
+          url: `${LUX_3D_URL}/${layer.name}/tileset.json`,
+          type: 'CesiumTilesetLayer',
+        };
+        break;
       default:
         break;
     }
@@ -76,6 +87,7 @@ export function mapLayerToConfig(
         owsUrl,
         wmtsUrl,
         translations,
+        is3D,
         subParentName,
       );
     });
