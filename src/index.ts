@@ -6,11 +6,10 @@ import { mapLayerToConfig } from './utils';
 
 // TODO: move to plugin config
 const LUX_THEMES_URL =
-  'https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=500844b6967f4c4b9f05085f3c22da5c&background=background';
+  'https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=0&background=background';
 const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
 const LUX_WMTS_URL = 'https://wmts3.geoportail.lu/mapproxy_4_v3/wmts';
-const LUX_I18N_URL =
-  'https://map.geoportail.lu/static/500844b6967f4c4b9f05085f3c22da5c/fr.json?';
+const LUX_I18N_URL = 'https://map.geoportail.lu/static/0/fr.json?';
 
 type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
