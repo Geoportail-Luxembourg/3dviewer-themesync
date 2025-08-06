@@ -7,8 +7,6 @@ import { mapLayerToConfig } from './utils';
 // TODO: move to plugin config
 const LUX_THEMES_URL =
   'https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=0&background=background';
-const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
-const LUX_WMTS_URL = 'https://wmts3.geoportail.lu/mapproxy_4_v3/wmts';
 const LUX_I18N_URL = 'https://map.geoportail.lu/static/0/fr.json?';
 
 type PluginConfig = Record<never, never>;
@@ -59,27 +57,14 @@ export default function plugin(
         // add 3D theme
         (themes as ThemesResponse)?.themes[17]?.children?.forEach(
           (layer: ThemeLayer) => {
-            mapLayerToConfig(
-              moduleConfig,
-              layer,
-              LUX_OWS_URL,
-              LUX_WMTS_URL,
-              translations.fr,
-              true,
-            );
+            mapLayerToConfig(moduleConfig, layer, translations.fr, true);
           },
         );
 
         // add main theme
         (themes as ThemesResponse)?.themes[0]?.children?.forEach(
           (layer: ThemeLayer) => {
-            mapLayerToConfig(
-              moduleConfig,
-              layer,
-              LUX_OWS_URL,
-              LUX_WMTS_URL,
-              translations.fr,
-            );
+            mapLayerToConfig(moduleConfig, layer, translations.fr);
           },
         );
 

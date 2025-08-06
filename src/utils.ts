@@ -1,6 +1,9 @@
 import type { ContentTreeItem } from '@vcmap/ui';
 import type { LayerConfig, ThemeLayer } from './model';
 
+// TODO: move to plugin config
+const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
+const LUX_WMTS_URL = 'https://wmts3.geoportail.lu/mapproxy_4_v3/wmts';
 const LUX_3D_URL = 'https://acts3.geoportail.lu/3d-data/3d-tiles';
 
 function getFormat(imageType?: string): string {
@@ -10,8 +13,6 @@ function getFormat(imageType?: string): string {
 export function mapLayerToConfig(
   configDiff: { layers: []; contentTree: [] },
   layer: ThemeLayer,
-  owsUrl: string,
-  wmtsUrl: string,
   translations: Record<string, string>,
   is3D = false,
   parentName?: string,
@@ -33,7 +34,7 @@ export function mapLayerToConfig(
       case 'WMS':
         layerConfig = {
           ...layerConfig,
-          url: owsUrl,
+          url: LUX_OWS_URL,
           tilingSchema: 'mercator',
           parameters: {
             format: 'image/png',
@@ -44,7 +45,7 @@ export function mapLayerToConfig(
       case 'WMTS':
         layerConfig = {
           ...layerConfig,
-          url: `${wmtsUrl}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(layer.imageType)}`,
+          url: `${LUX_WMTS_URL}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(layer.imageType)}`,
           extent: {
             coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
@@ -81,15 +82,7 @@ export function mapLayerToConfig(
       ? `${parentName}.${layer.name}`
       : layer.name;
     layer.children.forEach((child) => {
-      mapLayerToConfig(
-        configDiff,
-        child,
-        owsUrl,
-        wmtsUrl,
-        translations,
-        is3D,
-        subParentName,
-      );
+      mapLayerToConfig(configDiff, child, translations, is3D, subParentName);
     });
   }
 }
