@@ -48,10 +48,30 @@ export default function plugin(
       console.log('Fetched translations:', translations.fr);
 
       if (themes && themes.themes) {
+        // init config with terrain
         const moduleConfig: ModuleConfig = {
           _id: 'catalogConfig',
-          layers: [],
-          contentTree: [],
+          layers: [
+            {
+              id: 'luxBaseTerrain',
+              name: 'LuxBaseTerrain',
+              url: themes.lux_3d.terrain_url,
+              type: 'TerrainLayer',
+              activeOnStartup: true,
+              requestVertexNormals: true,
+              properties: {
+                title: 'Luxembourg Terrain',
+              },
+            },
+          ],
+          contentTree: [
+            // terrain may be removed from content tree
+            {
+              name: 'terrain',
+              type: 'LayerContentTreeItem',
+              layerName: 'LuxBaseTerrain',
+            },
+          ],
         };
 
         // add 3D theme

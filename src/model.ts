@@ -22,9 +22,9 @@ export interface LayerConfig {
   name: string;
   source?: string;
   style?: string;
-  layers: string;
+  layers?: string;
   activeOnStartup: boolean;
-  allowPicking: boolean;
+  allowPicking?: boolean;
   properties?: Record<string, unknown>;
   type: string;
   url?: string;
@@ -39,14 +39,15 @@ export interface LayerConfig {
       epsg: string;
     };
   };
+  requestVertexNormals?: boolean;
 }
 
 export interface ContentTreeItemConfig {
   name: string;
   type: string;
   layerName: string;
-  title: string;
-  visible: boolean;
+  title?: string;
+  visible?: boolean;
 }
 
 export interface ModuleConfig {
