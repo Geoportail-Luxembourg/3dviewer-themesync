@@ -65,9 +65,16 @@ export default function plugin(
             },
           ],
           contentTree: [
+            {
+              name: '3d',
+              type: 'SubContentTreeItem',
+              icon: '$vcsGround',
+              title: '3D',
+              tooltip: '3D Layers',
+            },
             // terrain may be removed from content tree
             {
-              name: 'terrain',
+              name: '3d.terrain',
               type: 'LayerContentTreeItem',
               layerName: 'LuxBaseTerrain',
             },

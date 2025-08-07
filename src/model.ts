@@ -45,9 +45,11 @@ export interface LayerConfig {
 export interface ContentTreeItemConfig {
   name: string;
   type: string;
-  layerName: string;
+  layerName?: string;
   title?: string;
   visible?: boolean;
+  icon?: string;
+  tooltip?: string;
 }
 
 export interface ModuleConfig {
