@@ -1,5 +1,4 @@
-import type { ContentTreeItem } from '@vcmap/ui';
-import type { LayerConfig, ThemeLayer } from './model';
+import type { LayerConfig, ThemeItem, ModuleConfig } from './model';
 
 // TODO: move to plugin config
 const LUX_OWS_URL = 'https://wmsproxy.geoportail.lu/ogcproxywms';
@@ -10,27 +9,27 @@ function getFormat(imageType?: string): string {
   return imageType?.split('/')[1] || 'png';
 }
 
-export function mapLayerToConfig(
-  configDiff: { layers: []; contentTree: [] },
-  layer: ThemeLayer,
+export function mapThemeToConfig(
+  moduleConfig: ModuleConfig,
+  themeItem: ThemeItem,
   translations: Record<string, string>,
   is3D = false,
   parentName?: string,
 ): void {
-  if (is3D) layer.type = '3D';
-  if (layer && layer.type) {
+  if (is3D) themeItem.type = '3D';
+  if (themeItem && themeItem.type) {
     let layerConfig: LayerConfig = {
-      id: layer.id,
-      name: layer.name,
-      source: layer.source,
-      style: layer.style,
-      layers: layer.name,
+      id: themeItem.id,
+      name: themeItem.name,
+      source: themeItem.source,
+      style: themeItem.style,
+      layers: themeItem.name,
       activeOnStartup: false,
       allowPicking: false,
-      properties: layer.properties,
-      type: `${layer.type}Layer`,
+      properties: themeItem.properties,
+      type: `${themeItem.type}Layer`,
     };
-    switch (layer.type) {
+    switch (themeItem.type) {
       case 'WMS':
         layerConfig = {
           ...layerConfig,
@@ -45,7 +44,7 @@ export function mapLayerToConfig(
       case 'WMTS':
         layerConfig = {
           ...layerConfig,
-          url: `${LUX_WMTS_URL}/${layer.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(layer.imageType)}`,
+          url: `${LUX_WMTS_URL}/${themeItem.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
           extent: {
             coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
@@ -57,32 +56,32 @@ export function mapLayerToConfig(
       case '3D':
         layerConfig = {
           ...layerConfig,
-          url: `${LUX_3D_URL}/${layer.name}/tileset.json`,
+          url: `${LUX_3D_URL}/${themeItem.name}/tileset.json`,
           type: 'CesiumTilesetLayer',
         };
         break;
       default:
         break;
     }
-    (configDiff.layers as LayerConfig[]).push(layerConfig);
+    moduleConfig.layers.push(layerConfig);
   }
-  (configDiff.contentTree as ContentTreeItem[]).push({
-    name: parentName ? `${parentName}.${layer.name}` : layer.name,
+  moduleConfig.contentTree.push({
+    name: parentName ? `${parentName}.${themeItem.name}` : themeItem.name,
     type:
-      layer.children && layer.children.length > 0
+      themeItem.children && themeItem.children.length > 0
         ? 'NodeContentTreeItem'
         : 'LayerContentTreeItem',
-    layerName: layer.name,
-    title: translations[layer.name] || layer.name,
+    layerName: themeItem.name,
+    title: translations[themeItem.name] || themeItem.name,
     visible: true,
   });
 
-  if (layer.children && Array.isArray(layer.children)) {
+  if (themeItem.children && Array.isArray(themeItem.children)) {
     const subParentName = parentName
-      ? `${parentName}.${layer.name}`
-      : layer.name;
-    layer.children.forEach((child) => {
-      mapLayerToConfig(configDiff, child, translations, is3D, subParentName);
+      ? `${parentName}.${themeItem.name}`
+      : themeItem.name;
+    themeItem.children.forEach((child) => {
+      mapThemeToConfig(moduleConfig, child, translations, is3D, subParentName);
     });
   }
 }

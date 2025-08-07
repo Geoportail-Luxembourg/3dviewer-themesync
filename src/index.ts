@@ -1,8 +1,8 @@
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { VcsModule } from '@vcmap/core';
 import { name, version, mapVersion } from '../package.json';
-import type { ThemeLayer, ThemesResponse } from './model';
-import { mapLayerToConfig } from './utils';
+import type { ModuleConfig, ThemeItem, ThemesResponse } from './model';
+import { mapThemeToConfig } from './utils';
 
 // TODO: move to plugin config
 const LUX_THEMES_URL =
@@ -48,7 +48,7 @@ export default function plugin(
       console.log('Fetched translations:', translations.fr);
 
       if (themes && themes.themes) {
-        const moduleConfig = {
+        const moduleConfig: ModuleConfig = {
           _id: 'catalogConfig',
           layers: [],
           contentTree: [],
@@ -56,15 +56,15 @@ export default function plugin(
 
         // add 3D theme
         (themes as ThemesResponse)?.themes[17]?.children?.forEach(
-          (layer: ThemeLayer) => {
-            mapLayerToConfig(moduleConfig, layer, translations.fr, true);
+          (themeItem: ThemeItem) => {
+            mapThemeToConfig(moduleConfig, themeItem, translations.fr, true);
           },
         );
 
         // add main theme
         (themes as ThemesResponse)?.themes[0]?.children?.forEach(
-          (layer: ThemeLayer) => {
-            mapLayerToConfig(moduleConfig, layer, translations.fr);
+          (themeItem: ThemeItem) => {
+            mapThemeToConfig(moduleConfig, themeItem, translations.fr);
           },
         );
 
