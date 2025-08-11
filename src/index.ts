@@ -1,13 +1,18 @@
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { VcsModule } from '@vcmap/core';
 import { name, version, mapVersion } from '../package.json';
-import type { ModuleConfig, ThemeItem, ThemesResponse } from './model';
+import {
+  LOCALES,
+  type ModuleConfig,
+  type ThemeItem,
+  type ThemesResponse,
+} from './model';
 import { mapThemeToConfig } from './utils';
 
 // TODO: move to plugin config
 const LUX_THEMES_URL =
   'https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=0&background=background';
-const LUX_I18N_URL = 'https://map.geoportail.lu/static/0/fr.json?';
+const LUX_I18N_URL = 'https://map.geoportail.lu/static/0';
 
 type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
@@ -41,11 +46,21 @@ export default function plugin(
       const themes = await fetch(LUX_THEMES_URL).then((response) =>
         response.json(),
       );
-      const translations = await fetch(LUX_I18N_URL).then((response) =>
-        response.json(),
+      const translations = await Promise.all(
+        LOCALES.map((locale) =>
+          fetch(`${LUX_I18N_URL}/${locale}.json`).then((response) =>
+            response.json(),
+          ),
+        ),
       );
+      const flatTranslations = translations.reduce(
+        (acc, curr) => ({ ...acc, ...curr }),
+        {},
+      );
+      // eslint-disable-next-line no-console
       console.log('Fetched themes:', themes);
-      console.log('Fetched translations:', translations.fr);
+      // eslint-disable-next-line no-console
+      console.log('Fetched translations:', translations);
 
       if (themes && themes.themes) {
         // init config with terrain
@@ -79,25 +94,35 @@ export default function plugin(
               layerName: 'LuxBaseTerrain',
             },
           ],
+          i18n: [
+            {
+              name: 'layerTranslations',
+              fr: { layers: [] },
+              de: { layers: [] },
+              en: { layers: [] },
+              lb: { layers: [] },
+            },
+          ],
         };
 
         // add 3D theme
         (themes as ThemesResponse)?.themes[17]?.children?.forEach(
           (themeItem: ThemeItem) => {
-            mapThemeToConfig(moduleConfig, themeItem, translations.fr, true);
+            mapThemeToConfig(moduleConfig, themeItem, flatTranslations, true);
           },
         );
 
         // add main theme
         (themes as ThemesResponse)?.themes[0]?.children?.forEach(
           (themeItem: ThemeItem) => {
-            mapThemeToConfig(moduleConfig, themeItem, translations.fr);
+            mapThemeToConfig(moduleConfig, themeItem, flatTranslations);
           },
         );
 
         const newModule = new VcsModule(moduleConfig);
         await vcsUiApp.addModule(newModule);
 
+        // eslint-disable-next-line no-console
         console.log('App with new module', vcsUiApp);
       }
 

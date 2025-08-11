@@ -1,3 +1,7 @@
+import type { I18nConfigurationItem } from '@vcmap/ui';
+
+export const LOCALES = ['fr', 'de', 'en', 'lb'];
+
 export interface ThemeItem {
   id: string;
   name: string;
@@ -56,4 +60,5 @@ export interface ModuleConfig {
   _id: 'catalogConfig';
   layers: LayerConfig[];
   contentTree: ContentTreeItemConfig[];
+  i18n: Array<I18nConfigurationItem & { fr: object; lb: object }>;
 }
