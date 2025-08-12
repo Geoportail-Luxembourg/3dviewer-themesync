@@ -1,8 +1,15 @@
+import { type VcsApp, VcsModule } from '@vcmap/core';
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
-import { LOCALES, type ThemesResponse } from './model';
-import { set2dTheme, set3dTheme } from './utils';
+import {
+  LOCALES,
+  type ModuleConfig,
+  type Theme,
+  type ThemeItem,
+  type ThemesResponse,
+} from './model';
 import ThemesDropDownComponent from './ThemesDropDownComponent.vue';
+import { mapThemeToConfig } from './utils';
 
 // TODO: move to plugin config
 const LUX_THEMES_URL =
@@ -20,6 +27,107 @@ export default function plugin(
 ): CatalogPlugin {
   // eslint-disable-next-line no-console
   console.log(config, baseUrl);
+
+  const modules: ModuleConfig[] = [];
+  let selectedModuleId: string;
+
+  function addModule(moduleConfig: ModuleConfig): void {
+    modules.push(moduleConfig);
+  }
+
+  async function loadModule(app: VcsApp, moduleId: string): Promise<void> {
+    if (selectedModuleId) {
+      await app.removeModule(selectedModuleId);
+    }
+    const moduleConfig = modules.find((module) => module._id === moduleId);
+    if (moduleConfig) {
+      const newModule = new VcsModule(moduleConfig);
+      await app.addModule(newModule);
+      selectedModuleId = moduleId;
+    }
+  }
+
+  function add2dTheme(
+    theme: Theme,
+    translations: Record<string, Record<string, string>>,
+  ): void {
+    const moduleConfig2d: ModuleConfig = {
+      _id: theme.id,
+      layers: [],
+      contentTree: [],
+      i18n: [
+        {
+          name: 'layerTranslations2d',
+          fr: { layers: [] },
+          de: { layers: [] },
+          en: { layers: [] },
+          lb: { layers: [] },
+        },
+      ],
+    };
+
+    theme?.children?.forEach((themeItem: ThemeItem) => {
+      mapThemeToConfig(moduleConfig2d, themeItem, translations);
+    });
+
+    addModule(moduleConfig2d);
+  }
+
+  async function add3dTheme(
+    vcsUiApp: VcsApp,
+    theme: Theme,
+    terrainUrl: string,
+    translations: Record<string, Record<string, string>>,
+  ): Promise<void> {
+    const moduleConfig3d: ModuleConfig = {
+      _id: 'catalogConfig3d',
+      layers: [
+        {
+          id: 'luxBaseTerrain',
+          name: 'LuxBaseTerrain',
+          url: terrainUrl,
+          type: 'TerrainLayer',
+          activeOnStartup: true,
+          requestVertexNormals: true,
+          properties: {
+            title: 'Luxembourg Terrain',
+          },
+        },
+      ],
+      contentTree: [
+        {
+          name: '3d',
+          type: 'SubContentTreeItem',
+          icon: '$vcsGround',
+          title: '3D',
+          tooltip: '3D Layers',
+        },
+        // terrain may be removed from content tree
+        {
+          name: '3d.terrain',
+          type: 'LayerContentTreeItem',
+          layerName: 'LuxBaseTerrain',
+        },
+      ],
+      i18n: [
+        {
+          name: 'layerTranslations3d',
+          fr: { layers: [] },
+          de: { layers: [] },
+          en: { layers: [] },
+          lb: { layers: [] },
+        },
+      ],
+    };
+
+    theme.children?.forEach((themeItem: ThemeItem) => {
+      mapThemeToConfig(moduleConfig3d, themeItem, translations, true);
+    });
+
+    const module3d = new VcsModule(moduleConfig3d);
+    await vcsUiApp.addModule(module3d);
+  }
+
   return {
     get name(): string {
       return name;
@@ -61,8 +169,10 @@ export default function plugin(
       console.log('Fetched translations:', translations);
 
       if (themes) {
-        await set3dTheme(vcsUiApp, themes[17], terrainUrl, flatTranslations);
-        await set2dTheme(vcsUiApp, themes[0], flatTranslations);
+        await add3dTheme(vcsUiApp, themes[17], terrainUrl, flatTranslations);
+        themes.forEach((theme) => {
+          add2dTheme(theme, flatTranslations);
+        });
 
         // eslint-disable-next-line no-console
         console.log('App with new module', vcsUiApp);
@@ -97,11 +207,7 @@ export default function plugin(
             onThemeSelected: async (selectedThemeId: string) => {
               // eslint-disable-next-line no-console
               console.log(`Theme selected listening: ${selectedThemeId}`);
-
-              const selectedTheme =
-                themes.find((theme) => theme.id === selectedThemeId) ||
-                themes[0];
-              await set2dTheme(vcsUiApp, selectedTheme, flatTranslations);
+              await loadModule(vcsUiApp, selectedThemeId);
             },
           },
           state: {

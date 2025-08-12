@@ -1,10 +1,8 @@
-import { type VcsApp, VcsModule } from '@vcmap/core';
 import {
   type LayerConfig,
   type ThemeItem,
   type ModuleConfig,
   LOCALES,
-  type Theme,
 } from './model';
 
 // TODO: move to plugin config
@@ -119,92 +117,4 @@ export function mapThemeToConfig(
       mapThemeToConfig(moduleConfig, child, translations, is3D, subParentName);
     });
   }
-}
-
-export async function set2dTheme(
-  vcsUiApp: VcsApp,
-  theme: Theme,
-  translations: Record<string, Record<string, string>>,
-): Promise<void> {
-  const currentThemeConfig = vcsUiApp.getModuleById('catalogConfig2d');
-  if (currentThemeConfig) {
-    await vcsUiApp.removeModule(currentThemeConfig._id);
-  }
-
-  const moduleConfig2d: ModuleConfig = {
-    _id: 'catalogConfig2d',
-    layers: [],
-    contentTree: [],
-    i18n: [
-      {
-        name: 'layerTranslations2d',
-        fr: { layers: [] },
-        de: { layers: [] },
-        en: { layers: [] },
-        lb: { layers: [] },
-      },
-    ],
-  };
-
-  theme?.children?.forEach((themeItem: ThemeItem) => {
-    mapThemeToConfig(moduleConfig2d, themeItem, translations);
-  });
-
-  const module2d = new VcsModule(moduleConfig2d);
-  await vcsUiApp.addModule(module2d);
-}
-
-export async function set3dTheme(
-  vcsUiApp: VcsApp,
-  theme: Theme,
-  terrainUrl: string,
-  translations: Record<string, Record<string, string>>,
-): Promise<void> {
-  const moduleConfig3d: ModuleConfig = {
-    _id: 'catalogConfig3d',
-    layers: [
-      {
-        id: 'luxBaseTerrain',
-        name: 'LuxBaseTerrain',
-        url: terrainUrl,
-        type: 'TerrainLayer',
-        activeOnStartup: true,
-        requestVertexNormals: true,
-        properties: {
-          title: 'Luxembourg Terrain',
-        },
-      },
-    ],
-    contentTree: [
-      {
-        name: '3d',
-        type: 'SubContentTreeItem',
-        icon: '$vcsGround',
-        title: '3D',
-        tooltip: '3D Layers',
-      },
-      // terrain may be removed from content tree
-      {
-        name: '3d.terrain',
-        type: 'LayerContentTreeItem',
-        layerName: 'LuxBaseTerrain',
-      },
-    ],
-    i18n: [
-      {
-        name: 'layerTranslations3d',
-        fr: { layers: [] },
-        de: { layers: [] },
-        en: { layers: [] },
-        lb: { layers: [] },
-      },
-    ],
-  };
-
-  theme.children?.forEach((themeItem: ThemeItem) => {
-    mapThemeToConfig(moduleConfig3d, themeItem, translations, true);
-  });
-
-  const module3d = new VcsModule(moduleConfig3d);
-  await vcsUiApp.addModule(module3d);
 }
