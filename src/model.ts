@@ -14,11 +14,22 @@ export interface ThemeItem {
 }
 
 export interface Theme {
+  id: string;
+  name: string;
   children: ThemeItem[];
+  metadata?: {
+    // eslint-disable-next-line
+    display_in_switcher?: boolean;
+  };
 }
 
 export interface ThemesResponse {
   themes: Theme[];
+  // eslint-disable-next-line
+  lux_3d: {
+    // eslint-disable-next-line
+    terrain_url: string;
+  };
 }
 
 export interface LayerConfig {
@@ -57,7 +68,7 @@ export interface ContentTreeItemConfig {
 }
 
 export interface ModuleConfig {
-  _id: 'catalogConfig';
+  _id: string;
   layers: LayerConfig[];
   contentTree: ContentTreeItemConfig[];
   i18n: Array<I18nConfigurationItem & { fr: object; lb: object }>;
