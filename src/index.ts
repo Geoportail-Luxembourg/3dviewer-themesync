@@ -68,6 +68,27 @@ export default function plugin(
         console.log('App with new module', vcsUiApp);
       }
 
+      vcsUiApp.windowManager.added.addEventListener((window) => {
+        const contentTreePosition = {
+          left: '0px',
+          top: '74px',
+        };
+        if (window.id === 'Content') {
+          vcsUiApp.windowManager.setWindowPositionOptions(
+            'Content',
+            contentTreePosition,
+          );
+          vcsUiApp.windowManager.remove('3d');
+        }
+        if (window.id === '3d') {
+          vcsUiApp.windowManager.setWindowPositionOptions(
+            '3d',
+            contentTreePosition,
+          );
+          vcsUiApp.windowManager.remove('Content');
+        }
+      });
+
       const themesDropDown = vcsUiApp.windowManager.add(
         {
           component: ThemesDropDownComponent,
@@ -83,8 +104,15 @@ export default function plugin(
               await set2dTheme(vcsUiApp, selectedTheme, flatTranslations);
             },
           },
+          state: {
+            headerTitle: 'Theme',
+          },
+          position: {
+            left: '0px',
+            top: '0px',
+          },
         },
-        'owner',
+        'catalogPlugin',
       );
       // eslint-disable-next-line no-console
       console.log('Added themes dropdown:', themesDropDown);

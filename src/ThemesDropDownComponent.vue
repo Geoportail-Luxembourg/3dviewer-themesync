@@ -1,6 +1,5 @@
 <template>
   <div class="themes-dropdown">
-    <label for="theme-select">Theme:</label>
     <select id="theme-select" v-model="selectedTheme" @change="onThemeChange">
       <option v-for="theme in themes" :key="theme.id" :value="theme.id">
         {{ theme.name }}
@@ -46,5 +45,6 @@
     display: flex;
     align-items: center;
     gap: 0.5em;
+    padding: 8px;
   }
 </style>
