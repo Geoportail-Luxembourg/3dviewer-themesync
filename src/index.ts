@@ -41,6 +41,7 @@ export default function plugin(
    * @param moduleId The ID of the module to load.
    */
   async function loadModule(app: VcsApp, moduleId: string): Promise<void> {
+    if (selectedModuleId === moduleId) return;
     if (selectedModuleId) {
       await app.removeModule(selectedModuleId);
     }
@@ -151,47 +152,47 @@ export default function plugin(
    **/
   function addThemeSelector(vcsUiApp: VcsUiApp, themes: Theme[]): void {
     vcsUiApp.windowManager.added.addEventListener((window) => {
-      const contentTreePosition = {
-        left: '0px',
-        top: '74px',
-      };
       if (window.id === 'Content') {
-        vcsUiApp.windowManager.setWindowPositionOptions(
-          'Content',
-          contentTreePosition,
+        vcsUiApp.windowManager.setWindowPositionOptions('Content', {
+          left: '0px',
+          top: '74px',
+        });
+        vcsUiApp.windowManager.add(
+          {
+            id: 'themeSelector',
+            component: ThemesDropDownComponent,
+            props: {
+              themes,
+              onThemeSelected: async (selectedThemeId: string) => {
+                // eslint-disable-next-line no-console
+                console.log(`Theme selected listening: ${selectedThemeId}`);
+                await loadModule(vcsUiApp, selectedThemeId);
+              },
+            },
+            state: {
+              headerTitle: 'Theme',
+            },
+            position: {
+              left: '0px',
+              top: '0px',
+            },
+          },
+          'catalogPlugin',
         );
         vcsUiApp.windowManager.remove('3d');
       }
       if (window.id === '3d') {
-        vcsUiApp.windowManager.setWindowPositionOptions(
-          '3d',
-          contentTreePosition,
-        );
         vcsUiApp.windowManager.remove('Content');
       }
     });
-
-    vcsUiApp.windowManager.add(
-      {
-        component: ThemesDropDownComponent,
-        props: {
-          themes,
-          onThemeSelected: async (selectedThemeId: string) => {
-            // eslint-disable-next-line no-console
-            console.log(`Theme selected listening: ${selectedThemeId}`);
-            await loadModule(vcsUiApp, selectedThemeId);
-          },
-        },
-        state: {
-          headerTitle: 'Theme',
-        },
-        position: {
-          left: '0px',
-          top: '0px',
-        },
-      },
-      'catalogPlugin',
-    );
+    vcsUiApp.windowManager.removed.addEventListener((window) => {
+      if (window.id === 'Content') {
+        vcsUiApp.windowManager.remove('themeSelector');
+      }
+      if (window.id === 'themeSelector') {
+        vcsUiApp.windowManager.remove('Content');
+      }
+    });
   }
 
   return {
