@@ -63,7 +63,7 @@ export default function plugin(
     translations: Record<string, Record<string, string>>,
   ): void {
     const moduleConfig2d: ModuleConfig = {
-      _id: theme.id,
+      _id: theme.name,
       layers: [],
       contentTree: [],
       i18n: [
@@ -100,7 +100,6 @@ export default function plugin(
       _id: 'catalogConfig3d',
       layers: [
         {
-          id: 'luxBaseTerrain',
           name: 'LuxBaseTerrain',
           url: terrainUrl,
           type: 'TerrainLayer',
@@ -163,10 +162,10 @@ export default function plugin(
             component: ThemesDropDownComponent,
             props: {
               themes,
-              onThemeSelected: async (selectedThemeId: string) => {
+              onThemeSelected: async (selectedThemeName: string) => {
                 // eslint-disable-next-line no-console
-                console.log(`Theme selected listening: ${selectedThemeId}`);
-                await loadModule(vcsUiApp, selectedThemeId);
+                console.log(`Theme selected: ${selectedThemeName}`);
+                await loadModule(vcsUiApp, selectedThemeName);
               },
             },
             state: {

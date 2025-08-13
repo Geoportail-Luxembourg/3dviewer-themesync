@@ -3,7 +3,7 @@ import type { I18nConfigurationItem } from '@vcmap/ui';
 export const LOCALES = ['fr', 'de', 'en', 'lb'];
 
 export interface ThemeItem {
-  id: string;
+  id: number;
   name: string;
   source?: string;
   style?: string;
@@ -14,7 +14,7 @@ export interface ThemeItem {
 }
 
 export interface Theme {
-  id: string;
+  id: number;
   name: string;
   children: ThemeItem[];
   metadata?: {
@@ -33,7 +33,7 @@ export interface ThemesResponse {
 }
 
 export interface LayerConfig {
-  id: string;
+  id?: number;
   name: string;
   source?: string;
   style?: string;

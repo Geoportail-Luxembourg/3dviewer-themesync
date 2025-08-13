@@ -1,7 +1,7 @@
 <template>
   <div class="themes-dropdown">
     <select id="theme-select" v-model="selectedTheme" @change="onThemeChange">
-      <option v-for="theme in themes" :key="theme.id" :value="theme.id">
+      <option v-for="theme in themes" :key="theme.id" :value="theme.name">
         {{ theme.name }}
       </option>
     </select>
@@ -9,27 +9,19 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch, onMounted } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { useI18n } from 'vue-i18n';
 
   const props = defineProps<{
-    themes: Array<{ id: string; name: string }>;
-    initialTheme?: string;
+    themes: Array<{ id: number; name: string }>;
   }>();
 
   const emit = defineEmits<{
-    (e: 'theme-selected', themeId: string): void;
+    (e: 'theme-selected', themeName: string): void;
   }>();
 
   const { t, locale } = useI18n();
-  const selectedTheme = ref(props.initialTheme || (props.themes[0]?.id ?? ''));
-
-  watch(
-    () => props.initialTheme,
-    (val) => {
-      if (val) selectedTheme.value = val;
-    },
-  );
+  const selectedTheme = ref(props.themes[0]?.name ?? '');
 
   function onThemeChange(): void {
     emit('theme-selected', selectedTheme.value);
