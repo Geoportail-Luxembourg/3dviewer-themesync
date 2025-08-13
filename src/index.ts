@@ -35,6 +35,11 @@ export default function plugin(
     modules.push(moduleConfig);
   }
 
+  /**
+   * Adds a module from the modules[] array to the VCS application.
+   * @param app The VCS application instance.
+   * @param moduleId The ID of the module to load.
+   */
   async function loadModule(app: VcsApp, moduleId: string): Promise<void> {
     if (selectedModuleId) {
       await app.removeModule(selectedModuleId);
@@ -47,6 +52,11 @@ export default function plugin(
     }
   }
 
+  /**
+   * Maps 2D theme and adds mapped config to modules[] array.
+   * @param theme The theme to add.
+   * @param translations The translations to use.
+   **/
   function add2dTheme(
     theme: Theme,
     translations: Record<string, Record<string, string>>,
@@ -73,6 +83,12 @@ export default function plugin(
     addModule(moduleConfig2d);
   }
 
+  /**
+   * Maps 3d theme and adds mapped config directly to the VCS application.
+   * @param moduleConfig The module configuration to update.
+   * @param themeItem The theme item to map.
+   * @param translations The translations to use.
+   **/
   async function add3dTheme(
     vcsUiApp: VcsApp,
     theme: Theme,
@@ -128,6 +144,56 @@ export default function plugin(
     await vcsUiApp.addModule(module3d);
   }
 
+  /**
+   * Adds a theme selector above the content tree to the VCS application.
+   * @param vcsUiApp The VCS application instance.
+   * @param themes The list of themes to include in the selector.
+   **/
+  function addThemeSelector(vcsUiApp: VcsUiApp, themes: Theme[]): void {
+    vcsUiApp.windowManager.added.addEventListener((window) => {
+      const contentTreePosition = {
+        left: '0px',
+        top: '74px',
+      };
+      if (window.id === 'Content') {
+        vcsUiApp.windowManager.setWindowPositionOptions(
+          'Content',
+          contentTreePosition,
+        );
+        vcsUiApp.windowManager.remove('3d');
+      }
+      if (window.id === '3d') {
+        vcsUiApp.windowManager.setWindowPositionOptions(
+          '3d',
+          contentTreePosition,
+        );
+        vcsUiApp.windowManager.remove('Content');
+      }
+    });
+
+    vcsUiApp.windowManager.add(
+      {
+        component: ThemesDropDownComponent,
+        props: {
+          themes,
+          onThemeSelected: async (selectedThemeId: string) => {
+            // eslint-disable-next-line no-console
+            console.log(`Theme selected listening: ${selectedThemeId}`);
+            await loadModule(vcsUiApp, selectedThemeId);
+          },
+        },
+        state: {
+          headerTitle: 'Theme',
+        },
+        position: {
+          left: '0px',
+          top: '0px',
+        },
+      },
+      'catalogPlugin',
+    );
+  }
+
   return {
     get name(): string {
       return name;
@@ -146,12 +212,22 @@ export default function plugin(
         state,
       );
 
+      // fetch and filter themes
       const themesResponse: ThemesResponse = await fetch(LUX_THEMES_URL).then(
         (response) => response.json(),
       );
       const { themes } = themesResponse;
       const terrainUrl = themesResponse.lux_3d.terrain_url;
+      const theme3d = themes.find(
+        (theme) => theme.name === '3D Layers',
+      ) as Theme;
+      const themes2d = themes.filter(
+        (theme) =>
+          theme.name !== '3D Layers' &&
+          theme.metadata?.display_in_switcher === true,
+      );
 
+      // fetch and flatten translations
       const translations = await Promise.all(
         LOCALES.map((locale) =>
           fetch(`${LUX_I18N_URL}/${locale}.json`).then((response) =>
@@ -168,9 +244,9 @@ export default function plugin(
       // eslint-disable-next-line no-console
       console.log('Fetched translations:', translations);
 
-      if (themes) {
-        await add3dTheme(vcsUiApp, themes[17], terrainUrl, flatTranslations);
-        themes.forEach((theme) => {
+      if (themes2d.length > 0 || theme3d) {
+        await add3dTheme(vcsUiApp, theme3d, terrainUrl, flatTranslations);
+        themes2d.forEach((theme) => {
           add2dTheme(theme, flatTranslations);
         });
 
@@ -178,50 +254,7 @@ export default function plugin(
         console.log('App with new module', vcsUiApp);
       }
 
-      vcsUiApp.windowManager.added.addEventListener((window) => {
-        const contentTreePosition = {
-          left: '0px',
-          top: '74px',
-        };
-        if (window.id === 'Content') {
-          vcsUiApp.windowManager.setWindowPositionOptions(
-            'Content',
-            contentTreePosition,
-          );
-          vcsUiApp.windowManager.remove('3d');
-        }
-        if (window.id === '3d') {
-          vcsUiApp.windowManager.setWindowPositionOptions(
-            '3d',
-            contentTreePosition,
-          );
-          vcsUiApp.windowManager.remove('Content');
-        }
-      });
-
-      const themesDropDown = vcsUiApp.windowManager.add(
-        {
-          component: ThemesDropDownComponent,
-          props: {
-            themes,
-            onThemeSelected: async (selectedThemeId: string) => {
-              // eslint-disable-next-line no-console
-              console.log(`Theme selected listening: ${selectedThemeId}`);
-              await loadModule(vcsUiApp, selectedThemeId);
-            },
-          },
-          state: {
-            headerTitle: 'Theme',
-          },
-          position: {
-            left: '0px',
-            top: '0px',
-          },
-        },
-        'catalogPlugin',
-      );
-      // eslint-disable-next-line no-console
-      console.log('Added themes dropdown:', themesDropDown);
+      addThemeSelector(vcsUiApp, themes2d);
     },
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
       // eslint-disable-next-line no-console
