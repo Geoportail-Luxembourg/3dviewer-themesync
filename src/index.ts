@@ -22,11 +22,7 @@ type CatalogPlugin = VcsPlugin<PluginConfig, PluginState>;
 
 export default function catalogPlugin(
   pluginConfig: PluginConfig,
-  baseUrl: string,
 ): CatalogPlugin {
-  // eslint-disable-next-line no-console
-  console.log(pluginConfig, baseUrl);
-
   const pluginState = reactive({
     selectedModuleId: null as string | null,
     modules: [] as ModuleConfig[],
@@ -166,8 +162,6 @@ export default function catalogPlugin(
             props: {
               themes,
               onThemeSelected: async (selectedThemeName: string) => {
-                // eslint-disable-next-line no-console
-                console.log(`Theme selected: ${selectedThemeName}`);
                 // add selected 2d theme to the application (defaults to main)
                 await loadModule(vcsUiApp, selectedThemeName);
               },
@@ -208,14 +202,7 @@ export default function catalogPlugin(
     get mapVersion(): string {
       return mapVersion;
     },
-    async initialize(vcsUiApp: VcsUiApp, state?: PluginState): Promise<void> {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called before loading the rest of the current context. Passed in the containing Vcs UI App ',
-        vcsUiApp,
-        state,
-      );
-
+    async initialize(vcsUiApp: VcsUiApp): Promise<void> {
       // fetch and filter themes
       const themesResponse: ThemesResponse = await fetch(
         pluginConfig.luxThemesUrl,
@@ -248,11 +235,6 @@ export default function catalogPlugin(
       const themeTranslations = translateThemes(themes2d, flatTranslations);
       vcsUiApp.i18n.add(themeTranslations);
 
-      // eslint-disable-next-line no-console
-      console.log('Fetched themeResponse:', themesResponse);
-      // eslint-disable-next-line no-console
-      console.log('Fetched translations:', translations);
-
       if (themes2d.length > 0 || theme3d) {
         // add 3D theme in separate contentTree to application
         await add3dTheme(vcsUiApp, theme3d, terrainUrl, flatTranslations);
@@ -260,20 +242,11 @@ export default function catalogPlugin(
         themes2d.forEach((theme) => {
           add2dTheme(theme, flatTranslations);
         });
-
-        // eslint-disable-next-line no-console
-        console.log('App with new module', vcsUiApp);
       }
 
       addThemeSelector(vcsUiApp, themes2d);
     },
-    onVcsAppMounted(vcsUiApp: VcsUiApp): void {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called when the root UI component is mounted and managers are ready to accept components',
-        vcsUiApp,
-      );
-    },
+    onVcsAppMounted(): void {},
     /**
      * should return all default values of the configuration
      */
@@ -284,8 +257,6 @@ export default function catalogPlugin(
      * should return the plugin's serialization excluding all default values
      */
     toJSON(): PluginConfig {
-      // eslint-disable-next-line no-console
-      console.log('Called when serializing this plugin instance');
       return pluginConfig;
     },
     /**
@@ -293,9 +264,7 @@ export default function catalogPlugin(
      * @param {boolean} forUrl
      * @returns {PluginState}
      */
-    getState(forUrl?: boolean): PluginState {
-      // eslint-disable-next-line no-console
-      console.log('Called when collecting state, e.g. for create link', forUrl);
+    getState(): PluginState {
       return pluginState;
     },
     /**
@@ -304,9 +273,6 @@ export default function catalogPlugin(
     getConfigEditors(): PluginConfigEditor<object>[] {
       return [];
     },
-    destroy(): void {
-      // eslint-disable-next-line no-console
-      console.log('hook to cleanup');
-    },
+    destroy(): void {},
   };
 }
