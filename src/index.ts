@@ -9,7 +9,7 @@ import {
   type ThemesResponse,
 } from './model';
 import ThemesDropDownComponent from './ThemesDropDownComponent.vue';
-import { mapThemeToConfig } from './utils';
+import { mapThemeToConfig, translateThemes } from './utils';
 
 // TODO: move to plugin config
 const LUX_THEMES_URL =
@@ -165,6 +165,7 @@ export default function plugin(
               onThemeSelected: async (selectedThemeName: string) => {
                 // eslint-disable-next-line no-console
                 console.log(`Theme selected: ${selectedThemeName}`);
+                // add selected 2d theme to the application (defaults to main)
                 await loadModule(vcsUiApp, selectedThemeName);
               },
             },
@@ -239,13 +240,20 @@ export default function plugin(
         (acc, curr) => ({ ...acc, ...curr }),
         {},
       );
+
+      // add theme translations to app as they are not part of the module translations
+      const themeTranslations = translateThemes(themes2d, flatTranslations);
+      vcsUiApp.i18n.add(themeTranslations);
+
       // eslint-disable-next-line no-console
       console.log('Fetched themeResponse:', themesResponse);
       // eslint-disable-next-line no-console
       console.log('Fetched translations:', translations);
 
       if (themes2d.length > 0 || theme3d) {
+        // add 3D theme in separate contentTree to application
         await add3dTheme(vcsUiApp, theme3d, terrainUrl, flatTranslations);
+        // add 2D themes to modules array (do not add to application yet)
         themes2d.forEach((theme) => {
           add2dTheme(theme, flatTranslations);
         });

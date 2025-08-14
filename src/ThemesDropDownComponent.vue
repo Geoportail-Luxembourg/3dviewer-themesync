@@ -2,7 +2,7 @@
   <div class="themes-dropdown">
     <select id="theme-select" v-model="selectedTheme" @change="onThemeChange">
       <option v-for="theme in themes" :key="theme.id" :value="theme.name">
-        {{ theme.name }}
+        {{ $t(`theme.${theme.name}`) || theme.name }}
       </option>
     </select>
   </div>
@@ -10,7 +10,6 @@
 
 <script setup lang="ts">
   import { ref, onMounted } from 'vue';
-  import { useI18n } from 'vue-i18n';
 
   const props = defineProps<{
     themes: Array<{ id: number; name: string }>;
@@ -20,7 +19,6 @@
     (e: 'theme-selected', themeName: string): void;
   }>();
 
-  const { t, locale } = useI18n();
   const selectedTheme = ref(props.themes[0]?.name ?? '');
 
   function onThemeChange(): void {

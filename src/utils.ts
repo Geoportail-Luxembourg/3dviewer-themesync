@@ -1,8 +1,10 @@
+import { type I18nConfigurationItem } from '@vcmap/ui';
 import {
   type LayerConfig,
   type ThemeItem,
   type ModuleConfig,
   LOCALES,
+  type Theme,
 } from './model';
 
 // TODO: move to plugin config
@@ -117,4 +119,19 @@ export function mapThemeToConfig(
       mapThemeToConfig(moduleConfig, child, translations, is3D, subParentName);
     });
   }
+}
+
+export function translateThemes(
+  themes: Theme[],
+  translations: Record<string, Record<string, string>>,
+): I18nConfigurationItem {
+  const result: I18nConfigurationItem = { name: 'theme' };
+  LOCALES.forEach((locale) => {
+    result[locale] = {
+      theme: Object.fromEntries(
+        themes.map((theme) => [theme.name, translations[locale][theme.name]]),
+      ),
+    };
+  });
+  return result;
 }
