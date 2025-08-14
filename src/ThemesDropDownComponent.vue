@@ -37,4 +37,7 @@
     gap: 0.5em;
     padding: 8px;
   }
+  #theme-select {
+    cursor: pointer;
+  }
 </style>

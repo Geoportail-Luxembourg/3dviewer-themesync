@@ -118,12 +118,6 @@ export default function plugin(
           title: '3D',
           tooltip: '3D Layers',
         },
-        // terrain may be removed from content tree
-        {
-          name: '3d.terrain',
-          type: 'LayerContentTreeItem',
-          layerName: 'LuxBaseTerrain',
-        },
       ],
       i18n: [
         {
