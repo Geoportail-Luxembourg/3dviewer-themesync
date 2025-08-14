@@ -18,11 +18,11 @@ type PluginState = Reactive<{
   modules: ModuleConfig[];
 }>;
 
-type CatalogPlugin = VcsPlugin<PluginConfig, PluginState>;
+type Lux3dviewerThemesyncPlugin = VcsPlugin<PluginConfig, PluginState>;
 
-export default function catalogPlugin(
+export default function lux3dviewerThemesyncPlugin(
   pluginConfig: PluginConfig,
-): CatalogPlugin {
+): Lux3dviewerThemesyncPlugin {
   const pluginState = reactive({
     selectedModuleId: null as string | null,
     modules: [] as ModuleConfig[],
@@ -96,7 +96,7 @@ export default function catalogPlugin(
     translations: Record<string, Record<string, string>>,
   ): Promise<void> {
     const moduleConfig3d: ModuleConfig = {
-      _id: 'catalogConfig3d',
+      _id: 'moduleConfig3d',
       layers: [
         {
           name: 'LuxBaseTerrain',
@@ -174,7 +174,7 @@ export default function catalogPlugin(
               top: '0px',
             },
           },
-          'catalogPlugin',
+          'lux3dviewerThemesyncPlugin',
         );
         vcsUiApp.windowManager.remove('3d');
       }
