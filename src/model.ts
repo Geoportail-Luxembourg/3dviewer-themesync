@@ -2,6 +2,15 @@ import type { I18nConfigurationItem } from '@vcmap/ui';
 
 export const LOCALES = ['fr', 'de', 'en', 'lb'];
 
+export type PluginConfig = {
+  name: string;
+  luxThemesUrl: string;
+  luxI18nUrl: string;
+  luxOwsUrl: string;
+  luxWmtsUrl: string;
+  lux3dUrl: string;
+};
+
 export interface ThemeItem {
   id: number;
   name: string;

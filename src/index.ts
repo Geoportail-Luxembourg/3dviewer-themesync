@@ -3,6 +3,7 @@ import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
 import {
   LOCALES,
+  type PluginConfig,
   type ModuleConfig,
   type Theme,
   type ThemeItem,
@@ -11,22 +12,16 @@ import {
 import ThemesDropDownComponent from './ThemesDropDownComponent.vue';
 import { mapThemeToConfig, translateThemes } from './utils';
 
-// TODO: move to plugin config
-const LUX_THEMES_URL =
-  'https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=0&background=background';
-const LUX_I18N_URL = 'https://map.geoportail.lu/static/0';
-
-type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
 
 type CatalogPlugin = VcsPlugin<PluginConfig, PluginState>;
 
-export default function plugin(
-  config: PluginConfig,
+export default function catalogPlugin(
+  pluginConfig: PluginConfig,
   baseUrl: string,
 ): CatalogPlugin {
   // eslint-disable-next-line no-console
-  console.log(config, baseUrl);
+  console.log(pluginConfig, baseUrl);
 
   const modules: ModuleConfig[] = [];
   let selectedModuleId: string;
@@ -78,7 +73,7 @@ export default function plugin(
     };
 
     theme?.children?.forEach((themeItem: ThemeItem) => {
-      mapThemeToConfig(moduleConfig2d, themeItem, translations);
+      mapThemeToConfig(pluginConfig, moduleConfig2d, themeItem, translations);
     });
 
     addModule(moduleConfig2d);
@@ -131,7 +126,13 @@ export default function plugin(
     };
 
     theme.children?.forEach((themeItem: ThemeItem) => {
-      mapThemeToConfig(moduleConfig3d, themeItem, translations, true);
+      mapThemeToConfig(
+        pluginConfig,
+        moduleConfig3d,
+        themeItem,
+        translations,
+        true,
+      );
     });
 
     const module3d = new VcsModule(moduleConfig3d);
@@ -208,9 +209,9 @@ export default function plugin(
       );
 
       // fetch and filter themes
-      const themesResponse: ThemesResponse = await fetch(LUX_THEMES_URL).then(
-        (response) => response.json(),
-      );
+      const themesResponse: ThemesResponse = await fetch(
+        pluginConfig.luxThemesUrl,
+      ).then((response) => response.json());
       const { themes } = themesResponse;
       const terrainUrl = themesResponse.lux_3d.terrain_url;
       const theme3d = themes.find(
@@ -225,7 +226,7 @@ export default function plugin(
       // fetch and flatten translations
       const translations = await Promise.all(
         LOCALES.map((locale) =>
-          fetch(`${LUX_I18N_URL}/${locale}.json`).then((response) =>
+          fetch(`${pluginConfig.luxI18nUrl}/${locale}.json`).then((response) =>
             response.json(),
           ),
         ),
@@ -269,7 +270,7 @@ export default function plugin(
      * should return all default values of the configuration
      */
     getDefaultOptions(): PluginConfig {
-      return {};
+      return pluginConfig;
     },
     /**
      * should return the plugin's serialization excluding all default values
@@ -277,7 +278,7 @@ export default function plugin(
     toJSON(): PluginConfig {
       // eslint-disable-next-line no-console
       console.log('Called when serializing this plugin instance');
-      return {};
+      return pluginConfig;
     },
     /**
      * should return the plugins state
