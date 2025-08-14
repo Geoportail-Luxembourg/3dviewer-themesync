@@ -1,3 +1,4 @@
+import { type Reactive, reactive } from 'vue';
 import { type VcsApp, VcsModule } from '@vcmap/core';
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
@@ -12,7 +13,10 @@ import {
 import ThemesDropDownComponent from './ThemesDropDownComponent.vue';
 import { mapThemeToConfig, translateThemes } from './utils';
 
-type PluginState = Record<never, never>;
+type PluginState = Reactive<{
+  selectedModuleId: string | null;
+  modules: ModuleConfig[];
+}>;
 
 type CatalogPlugin = VcsPlugin<PluginConfig, PluginState>;
 
@@ -23,33 +27,37 @@ export default function catalogPlugin(
   // eslint-disable-next-line no-console
   console.log(pluginConfig, baseUrl);
 
-  const modules: ModuleConfig[] = [];
-  let selectedModuleId: string;
+  const pluginState = reactive({
+    selectedModuleId: null as string | null,
+    modules: [] as ModuleConfig[],
+  });
 
   function addModule(moduleConfig: ModuleConfig): void {
-    modules.push(moduleConfig);
+    pluginState.modules.push(moduleConfig);
   }
 
   /**
-   * Adds a module from the modules[] array to the VCS application.
+   * Adds a module from the pluginState.modules to the VCS application.
    * @param app The VCS application instance.
    * @param moduleId The ID of the module to load.
    */
   async function loadModule(app: VcsApp, moduleId: string): Promise<void> {
-    if (selectedModuleId === moduleId) return;
-    if (selectedModuleId) {
-      await app.removeModule(selectedModuleId);
+    if (pluginState.selectedModuleId === moduleId) return;
+    if (pluginState.selectedModuleId) {
+      await app.removeModule(pluginState.selectedModuleId);
     }
-    const moduleConfig = modules.find((module) => module._id === moduleId);
+    const moduleConfig = pluginState.modules.find(
+      (module) => module._id === moduleId,
+    );
     if (moduleConfig) {
       const newModule = new VcsModule(moduleConfig);
       await app.addModule(newModule);
-      selectedModuleId = moduleId;
+      pluginState.selectedModuleId = moduleId;
     }
   }
 
   /**
-   * Maps 2D theme and adds mapped config to modules[] array.
+   * Maps 2D theme and adds mapped config to pluginState.modules.
    * @param theme The theme to add.
    * @param translations The translations to use.
    **/
@@ -248,7 +256,7 @@ export default function catalogPlugin(
       if (themes2d.length > 0 || theme3d) {
         // add 3D theme in separate contentTree to application
         await add3dTheme(vcsUiApp, theme3d, terrainUrl, flatTranslations);
-        // add 2D themes to modules array (do not add to application yet)
+        // add 2D themes to pluginState.modules (do not add to application yet)
         themes2d.forEach((theme) => {
           add2dTheme(theme, flatTranslations);
         });
@@ -288,9 +296,7 @@ export default function catalogPlugin(
     getState(forUrl?: boolean): PluginState {
       // eslint-disable-next-line no-console
       console.log('Called when collecting state, e.g. for create link', forUrl);
-      return {
-        prop: '*',
-      };
+      return pluginState;
     },
     /**
      * components for configuring the plugin and/ or custom items defined by the plugin

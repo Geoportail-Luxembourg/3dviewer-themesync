@@ -77,7 +77,7 @@ export interface ContentTreeItemConfig {
 }
 
 export interface ModuleConfig {
-  _id: string;
+  _id: string; // for theme modules, this corresponds to the theme.name
   layers: LayerConfig[];
   contentTree: ContentTreeItemConfig[];
   i18n: Array<I18nConfigurationItem & { fr: object; lb: object }>;
