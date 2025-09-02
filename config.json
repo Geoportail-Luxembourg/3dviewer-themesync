@@ -1,5 +1,5 @@
 {
-  "name": "lux-3dviewer-themesync",
+  "name": "@geoportallux/lux-3dviewer-themesync",
   "luxThemesUrl": "https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=0&background=background",
   "luxI18nUrl": "https://map.geoportail.lu/static/0",
   "luxOwsUrl": "https://wmsproxy.geoportail.lu/ogcproxywms",
