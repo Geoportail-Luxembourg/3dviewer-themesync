@@ -1,10 +1,8 @@
-import { type I18nConfigurationItem } from '@vcmap/ui';
 import {
   type LayerConfig,
   type ThemeItem,
   type ModuleConfig,
   LOCALES,
-  type Theme,
   type PluginConfig,
 } from './model';
 
@@ -71,7 +69,9 @@ export function mapThemeToConfig(
       default:
         break;
     }
-    moduleConfig.layers.push(layerConfig);
+    if (!moduleConfig.layers.some((layer) => layer.id === layerConfig.id)) {
+      moduleConfig.layers.push(layerConfig);
+    }
   }
 
   // fill content tree
@@ -123,19 +123,4 @@ export function mapThemeToConfig(
       );
     });
   }
-}
-
-export function translateThemes(
-  themes: Theme[],
-  translations: Record<string, Record<string, string>>,
-): I18nConfigurationItem {
-  const result: I18nConfigurationItem = { name: 'theme' };
-  LOCALES.forEach((locale) => {
-    result[locale] = {
-      theme: Object.fromEntries(
-        themes.map((theme) => [theme.name, translations[locale][theme.name]]),
-      ),
-    };
-  });
-  return result;
 }
