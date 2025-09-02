@@ -9,6 +9,7 @@ export type PluginConfig = {
   luxOwsUrl: string;
   luxWmtsUrl: string;
   lux3dUrl: string;
+  luxLegendUrl: string;
 };
 
 export interface ThemeItem {
@@ -20,6 +21,7 @@ export interface ThemeItem {
   imageType?: string;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
+  metadata?: Record<string, unknown>;
 }
 
 export interface Theme {
