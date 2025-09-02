@@ -19,18 +19,30 @@ export default function lux3dviewerThemesyncPlugin(
   pluginConfig: PluginConfig,
 ): Lux3dviewerThemesyncPlugin {
   /**
-   * Maps 2D themes and adds them to application.
+   * Maps themes and adds them to application.
    * @param theme The theme to add.
    * @param translations The translations to use.
    **/
-  async function add2dThemes(
+  async function addThemes(
     vcsUiApp: VcsApp,
     themes: Theme[],
+    terrainUrl: string,
     translations: Record<string, Record<string, string>>,
   ): Promise<void> {
-    const moduleConfig2d: ModuleConfig = {
+    const moduleConfig: ModuleConfig = {
       _id: 'catalogConfig',
-      layers: [],
+      layers: [
+        {
+          name: 'LuxBaseTerrain',
+          url: terrainUrl,
+          type: 'TerrainLayer',
+          activeOnStartup: true,
+          requestVertexNormals: true,
+          properties: {
+            title: 'Luxembourg Terrain',
+          },
+        },
+      ],
       contentTree: [],
       i18n: [
         {
@@ -44,71 +56,17 @@ export default function lux3dviewerThemesyncPlugin(
     };
 
     themes?.forEach((themeItem: ThemeItem) => {
-      mapThemeToConfig(pluginConfig, moduleConfig2d, themeItem, translations);
-    });
-
-    const newModule = new VcsModule(moduleConfig2d);
-    await vcsUiApp.addModule(newModule);
-  }
-
-  /**
-   * Maps 3d theme and adds it to application.
-   * @param moduleConfig The module configuration to update.
-   * @param themeItem The theme item to map.
-   * @param translations The translations to use.
-   **/
-  async function add3dTheme(
-    vcsUiApp: VcsApp,
-    theme: Theme,
-    terrainUrl: string,
-    translations: Record<string, Record<string, string>>,
-  ): Promise<void> {
-    const moduleConfig3d: ModuleConfig = {
-      _id: 'catalogConfig3d',
-      layers: [
-        {
-          name: 'LuxBaseTerrain',
-          url: terrainUrl,
-          type: 'TerrainLayer',
-          activeOnStartup: true,
-          requestVertexNormals: true,
-          properties: {
-            title: 'Luxembourg Terrain',
-          },
-        },
-      ],
-      contentTree: [
-        {
-          name: '3d',
-          type: 'SubContentTreeItem',
-          icon: '$vcsGround',
-          title: '3D',
-          tooltip: '3D Layers',
-        },
-      ],
-      i18n: [
-        {
-          name: 'layerTranslations3d',
-          fr: { layers: [] },
-          de: { layers: [] },
-          en: { layers: [] },
-          lb: { layers: [] },
-        },
-      ],
-    };
-
-    theme.children?.forEach((themeItem: ThemeItem) => {
       mapThemeToConfig(
         pluginConfig,
-        moduleConfig3d,
+        moduleConfig,
         themeItem,
         translations,
-        true,
+        themeItem.name === '3D Layers',
       );
     });
 
-    const module3d = new VcsModule(moduleConfig3d);
-    await vcsUiApp.addModule(module3d);
+    const newModule = new VcsModule(moduleConfig);
+    await vcsUiApp.addModule(newModule);
   }
 
   return {
@@ -128,14 +86,18 @@ export default function lux3dviewerThemesyncPlugin(
       ).then((response) => response.json());
       const { themes } = themesResponse;
       const terrainUrl = themesResponse.lux_3d.terrain_url;
-      const theme3d = themes.find(
-        (theme) => theme.name === '3D Layers',
-      ) as Theme;
-      const themes2d = themes.filter(
-        (theme) =>
-          theme.name !== '3D Layers' &&
-          theme.metadata?.display_in_switcher === true,
-      );
+
+      const themesFiltered = themes
+        .filter(
+          (theme) =>
+            theme.name === '3D Layers' ||
+            theme.metadata?.display_in_switcher === true,
+        )
+        .sort((a, b) => {
+          if (a.name === '3D Layers') return -1;
+          if (b.name === '3D Layers') return 1;
+          return 0;
+        });
 
       // fetch and flatten translations
       const translations = await Promise.all(
@@ -150,10 +112,8 @@ export default function lux3dviewerThemesyncPlugin(
         {},
       );
 
-      if (themes2d.length > 0 || theme3d) {
-        // add 3D theme and 2D themes in separate contentTrees
-        await add3dTheme(vcsUiApp, theme3d, terrainUrl, flatTranslations);
-        await add2dThemes(vcsUiApp, themes2d, flatTranslations);
+      if (themesFiltered.length > 0) {
+        await addThemes(vcsUiApp, themesFiltered, terrainUrl, flatTranslations);
       }
     },
     onVcsAppMounted(): void {},

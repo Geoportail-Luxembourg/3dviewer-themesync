@@ -75,11 +75,8 @@ export function mapThemeToConfig(
   }
 
   // fill content tree
-  const prefix = is3D ? '3d.' : '';
   moduleConfig.contentTree.push({
-    name: parentName
-      ? `${prefix}${parentName}.${themeItem.name}`
-      : `${prefix}${themeItem.name}`,
+    name: parentName ? `${parentName}.${themeItem.name}` : themeItem.name,
     type:
       themeItem.children && themeItem.children.length > 0
         ? 'NodeContentTreeItem'
