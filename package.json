@@ -1,6 +1,6 @@
 {
   "name": "@geoportallux/lux-3dviewer-themesync",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -20,7 +20,7 @@
     "type-check": "vue-tsc --noEmit",
     "ensure-types": "vcmplugin ensure-types"
   },
-  "author": "author <email>",
+  "author": "Camptocamp",
   "license": "GPL-3.0",
   "keywords": [
     "vcmap",
