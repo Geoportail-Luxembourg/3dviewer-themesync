@@ -1,17 +1,74 @@
+import { type VcsApp, VcsModule } from '@vcmap/core';
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
+import {
+  LOCALES,
+  type PluginConfig,
+  type ModuleConfig,
+  type Theme,
+  type ThemeItem,
+  type ThemesResponse,
+} from './model';
+import { mapThemeToConfig } from './utils';
 
-type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
 
-type MyPlugin = VcsPlugin<PluginConfig, PluginState>;
+type Lux3dviewerThemesyncPlugin = VcsPlugin<PluginConfig, PluginState>;
 
-export default function plugin(
-  config: PluginConfig,
-  baseUrl: string,
-): MyPlugin {
-  // eslint-disable-next-line no-console
-  console.log(config, baseUrl);
+export default function lux3dviewerThemesyncPlugin(
+  pluginConfig: PluginConfig,
+): Lux3dviewerThemesyncPlugin {
+  /**
+   * Maps themes and adds them to application.
+   * @param theme The theme to add.
+   * @param translations The translations to use.
+   **/
+  async function addThemes(
+    vcsUiApp: VcsApp,
+    themes: Theme[],
+    terrainUrl: string,
+    translations: Record<string, Record<string, string>>,
+  ): Promise<void> {
+    const moduleConfig: ModuleConfig = {
+      _id: 'catalogConfig',
+      layers: [
+        {
+          name: 'LuxBaseTerrain',
+          url: terrainUrl,
+          type: 'TerrainLayer',
+          activeOnStartup: true,
+          requestVertexNormals: true,
+          properties: {
+            title: 'Luxembourg Terrain',
+          },
+        },
+      ],
+      contentTree: [],
+      i18n: [
+        {
+          name: 'layerTranslations2d',
+          fr: { layers: [] },
+          de: { layers: [] },
+          en: { layers: [] },
+          lb: { layers: [] },
+        },
+      ],
+    };
+
+    themes?.forEach((themeItem: ThemeItem) => {
+      mapThemeToConfig(
+        pluginConfig,
+        moduleConfig,
+        themeItem,
+        translations,
+        themeItem.name === '3D Layers',
+      );
+    });
+
+    const newModule = new VcsModule(moduleConfig);
+    await vcsUiApp.addModule(newModule);
+  }
+
   return {
     get name(): string {
       return name;
@@ -22,44 +79,62 @@ export default function plugin(
     get mapVersion(): string {
       return mapVersion;
     },
-    initialize(vcsUiApp: VcsUiApp, state?: PluginState): Promise<void> {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called before loading the rest of the current context. Passed in the containing Vcs UI App ',
-        vcsUiApp,
-        state,
+    async initialize(vcsUiApp: VcsUiApp): Promise<void> {
+      // fetch and filter themes
+      const themesResponse: ThemesResponse = await fetch(
+        pluginConfig.luxThemesUrl,
+      ).then((response) => response.json());
+      const { themes } = themesResponse;
+      const terrainUrl = themesResponse.lux_3d.terrain_url;
+
+      const themesFiltered = themes
+        .filter(
+          (theme) =>
+            theme.name === '3D Layers' ||
+            theme.metadata?.display_in_switcher === true,
+        )
+        .sort((a, b) => {
+          if (a.name === '3D Layers') return -1;
+          if (b.name === '3D Layers') return 1;
+          return 0;
+        });
+
+      // fetch and flatten translations
+      const translations = await Promise.all(
+        LOCALES.map((locale) =>
+          fetch(`${pluginConfig.luxI18nUrl}/${locale}.json`).then((response) =>
+            response.json(),
+          ),
+        ),
       );
-      return Promise.resolve();
-    },
-    onVcsAppMounted(vcsUiApp: VcsUiApp): void {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called when the root UI component is mounted and managers are ready to accept components',
-        vcsUiApp,
+      const flatTranslations = translations.reduce(
+        (acc, curr) => ({ ...acc, ...curr }),
+        {},
       );
+
+      if (themesFiltered.length > 0) {
+        await addThemes(vcsUiApp, themesFiltered, terrainUrl, flatTranslations);
+      }
     },
+    onVcsAppMounted(): void {},
     /**
      * should return all default values of the configuration
      */
     getDefaultOptions(): PluginConfig {
-      return {};
+      return pluginConfig;
     },
     /**
      * should return the plugin's serialization excluding all default values
      */
     toJSON(): PluginConfig {
-      // eslint-disable-next-line no-console
-      console.log('Called when serializing this plugin instance');
-      return {};
+      return pluginConfig;
     },
     /**
      * should return the plugins state
      * @param {boolean} forUrl
      * @returns {PluginState}
      */
-    getState(forUrl?: boolean): PluginState {
-      // eslint-disable-next-line no-console
-      console.log('Called when collecting state, e.g. for create link', forUrl);
+    getState(): PluginState {
       return {
         prop: '*',
       };
@@ -70,9 +145,6 @@ export default function plugin(
     getConfigEditors(): PluginConfigEditor<object>[] {
       return [];
     },
-    destroy(): void {
-      // eslint-disable-next-line no-console
-      console.log('hook to cleanup');
-    },
+    destroy(): void {},
   };
 }

@@ -1,6 +1,6 @@
 {
-  "name": "catalog",
-  "version": "0.0.1",
+  "name": "@geoportallux/lux-3dviewer-themesync",
+  "version": "0.0.3",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -8,7 +8,7 @@
     "prepublishOnly": "vcmplugin build",
     "build": "vcmplugin build",
     "bundle": "vcmplugin bundle",
-    "start": "vcmplugin serve",
+    "start": "vcmplugin serve --appConfig app.config.json",
     "preview": "vcmplugin preview",
     "buildStagingApp": "vcmplugin buildStagingApp",
     "lint:js": "eslint . --ext .vue,.js,.cjs,.mjs,.ts,.cts,.mts",
@@ -20,7 +20,7 @@
     "type-check": "vue-tsc --noEmit",
     "ensure-types": "vcmplugin ensure-types"
   },
-  "author": "author <email>",
+  "author": "Camptocamp",
   "license": "GPL-3.0",
   "keywords": [
     "vcmap",
@@ -37,6 +37,9 @@
   "exports": {
     ".": "dist/index.js",
     "./dist": "./dist/index.js"
+  },
+  "repository": {
+    "url": "https://github.com/Geoportail-Luxembourg/3dviewer-themesync"
   },
   "eslintIgnore": [
     "node_modules",
