@@ -57,6 +57,7 @@ export default function lux3dviewerThemesyncPlugin(
 
     themes?.forEach((themeItem: ThemeItem) => {
       mapThemeToConfig(
+        vcsUiApp,
         pluginConfig,
         moduleConfig,
         themeItem,

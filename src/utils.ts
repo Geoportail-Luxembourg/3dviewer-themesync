@@ -1,3 +1,4 @@
+import type { VcsApp } from '@vcmap/core';
 import {
   type LayerConfig,
   type ThemeItem,
@@ -10,7 +11,24 @@ function getFormat(imageType?: string): string {
   return imageType?.split('/')[1] || 'png';
 }
 
+function getLegendUrl(
+  legendBaseUrl: string,
+  metadata: Record<string, unknown> | undefined,
+  id: string,
+  lang: string,
+): string {
+  const name = metadata?.legend_name;
+  const queryParams = {
+    lang,
+    id,
+    ...((name && { name }) as { name?: string }),
+  };
+
+  return `${legendBaseUrl}?${new URLSearchParams(queryParams).toString()}`;
+}
+
 export function mapThemeToConfig(
+  vcsUiApp: VcsApp,
   pluginConfig: PluginConfig,
   moduleConfig: ModuleConfig,
   themeItem: ThemeItem,
@@ -31,6 +49,17 @@ export function mapThemeToConfig(
       allowPicking: false,
       properties: {
         title: `layers.${themeItem.name}.title`, // use translations for layers (content tree and elsewhere). does not contain nodes
+        legend: [
+          {
+            type: 'IframeLegendItem',
+            src: getLegendUrl(
+              pluginConfig.luxLegendUrl,
+              themeItem.metadata,
+              `${themeItem.id}`,
+              vcsUiApp.locale,
+            ), // Nice to have: update the legend when switching lang, but this is not implemented in vcmap-ui yet
+          },
+        ],
         ...themeItem.properties,
       },
       type: `${themeItem.type}Layer`,
@@ -111,6 +140,7 @@ export function mapThemeToConfig(
       : themeItem.name;
     themeItem.children.forEach((child) => {
       mapThemeToConfig(
+        vcsUiApp,
         pluginConfig,
         moduleConfig,
         child,
