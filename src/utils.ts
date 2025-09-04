@@ -1,6 +1,7 @@
 import type { VcsApp } from '@vcmap/core';
 import {
   type LayerConfig,
+  type LayerStyle,
   type ThemeItem,
   type ModuleConfig,
   LOCALES,
@@ -27,6 +28,39 @@ function getLegendUrl(
   return `${legendBaseUrl}?${new URLSearchParams(queryParams).toString()}`;
 }
 
+function getCesium3DTileStyleHideIds(ids: string[]): { show: string } {
+  const cesiumCondition = ids.map((id) => `\${id} === '${id}'`);
+  return {
+    show: `!(${cesiumCondition.join('||')})`,
+  };
+}
+
+function get3dStyle(themeItem: ThemeItem): LayerStyle | undefined {
+  let style: LayerStyle | undefined;
+  const old3dOptions = themeItem.metadata?.ol3d_options;
+
+  if (!old3dOptions) {
+    return style;
+  }
+
+  style = {
+    type: 'DeclarativeStyleItem',
+    declarativeStyle: {},
+  };
+
+  if (old3dOptions.cesium3DTileStyle) {
+    style.declarativeStyle = old3dOptions.cesium3DTileStyle;
+  }
+
+  if (old3dOptions.vcsHiddenObjectIds) {
+    style.declarativeStyle = getCesium3DTileStyleHideIds(
+      old3dOptions.vcsHiddenObjectIds,
+    );
+  }
+
+  return style;
+}
+
 export function mapThemeToConfig(
   vcsUiApp: VcsApp,
   pluginConfig: PluginConfig,
@@ -38,7 +72,12 @@ export function mapThemeToConfig(
 ): void {
   // fill layers
   if (is3D) themeItem.type = '3D';
-  if (themeItem && themeItem.type) {
+
+  if (
+    themeItem &&
+    themeItem.type &&
+    !moduleConfig.layers.some((layer) => layer.id === themeItem.id)
+  ) {
     let layerConfig: LayerConfig = {
       id: themeItem.id,
       name: themeItem.name,
@@ -93,14 +132,14 @@ export function mapThemeToConfig(
           ...layerConfig,
           url: `${pluginConfig.lux3dUrl}/${themeItem.name}/tileset.json`,
           type: 'CesiumTilesetLayer',
+          style: get3dStyle(themeItem),
         };
         break;
       default:
         break;
     }
-    if (!moduleConfig.layers.some((layer) => layer.id === layerConfig.id)) {
-      moduleConfig.layers.push(layerConfig);
-    }
+
+    moduleConfig.layers.push(layerConfig);
   }
 
   // fill content tree

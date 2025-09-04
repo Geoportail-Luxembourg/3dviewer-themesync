@@ -16,12 +16,20 @@ export interface ThemeItem {
   id: number;
   name: string;
   source?: string;
-  style?: string;
+  style?: string | LayerStyle;
   type?: 'WMS' | 'WMTS' | '3D';
   imageType?: string;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
-  metadata?: Record<string, unknown>;
+  metadata?: {
+    // eslint-disable-next-line  @typescript-eslint/naming-convention
+    legend_name?: string;
+    // eslint-disable-next-line  @typescript-eslint/naming-convention
+    ol3d_options?: Record<string, unknown> & {
+      cesium3DTileStyle?: Record<string, unknown>;
+      vcsHiddenObjectIds?: string[];
+    };
+  } & Record<string, unknown>;
 }
 
 export interface Theme {
@@ -43,11 +51,16 @@ export interface ThemesResponse {
   };
 }
 
+export interface LayerStyle {
+  type: string;
+  declarativeStyle: Record<string, unknown>;
+}
+
 export interface LayerConfig {
   id?: number;
   name: string;
   source?: string;
-  style?: string;
+  style?: string | LayerStyle;
   layers?: string;
   activeOnStartup: boolean;
   allowPicking?: boolean;
