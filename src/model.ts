@@ -15,9 +15,10 @@ export type PluginConfig = {
 export interface ThemeItem {
   id: number;
   name: string;
+  layer?: string;
   source?: string;
   style?: string | LayerStyle;
-  type?: 'WMS' | 'WMTS' | '3D';
+  type?: 'WMS' | 'WMTS' | 'data3d' | 'mesh3d';
   imageType?: string;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
@@ -27,6 +28,7 @@ export interface ThemeItem {
     legend_name?: string;
     // eslint-disable-next-line  @typescript-eslint/naming-convention
     ol3d_options?: Record<string, unknown> & {
+      heightOffset?: number;
       cesium3DTileStyle?: Record<string, unknown>;
       vcsHiddenObjectIds?: string[];
     };
@@ -81,6 +83,7 @@ export interface LayerConfig {
     };
   };
   requestVertexNormals?: boolean;
+  offset?: number[];
 }
 
 export interface ContentTreeItemConfig {

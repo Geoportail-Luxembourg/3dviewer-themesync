@@ -55,14 +55,20 @@ export default function lux3dviewerThemesyncPlugin(
       ],
     };
 
-    themes?.forEach((themeItem: ThemeItem) => {
+    themes?.forEach((theme: Theme) => {
+      let type3D: 'data3d' | 'mesh3d' | undefined;
+      if (theme.name === '3D Layers') {
+        type3D = 'data3d';
+      } else if (theme.name === '3D Meshes') {
+        type3D = 'mesh3d';
+      }
       mapThemeToConfig(
         vcsUiApp,
         pluginConfig,
         moduleConfig,
-        themeItem,
+        theme as ThemeItem,
         translations,
-        themeItem.name === '3D Layers',
+        type3D,
       );
     });
 
@@ -92,11 +98,12 @@ export default function lux3dviewerThemesyncPlugin(
         .filter(
           (theme) =>
             theme.name === '3D Layers' ||
+            theme.name === '3D Meshes' ||
             theme.metadata?.display_in_switcher === true,
         )
         .sort((a, b) => {
-          if (a.name === '3D Layers') return -1;
-          if (b.name === '3D Layers') return 1;
+          if (a.name === '3D Layers' || a.name === '3D Meshes') return -1;
+          if (b.name === '3D Layers' || b.name === '3D Meshes') return 1;
           return 0;
         });
 

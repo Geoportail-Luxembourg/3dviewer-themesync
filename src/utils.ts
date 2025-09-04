@@ -67,17 +67,16 @@ export function mapThemeToConfig(
   moduleConfig: ModuleConfig,
   themeItem: ThemeItem,
   translations: Record<string, Record<string, string>>,
-  is3D = false,
+  type3D?: 'data3d' | 'mesh3d',
   parentName?: string,
 ): void {
   // fill layers
-  if (is3D) themeItem.type = '3D';
-
   if (
     themeItem &&
     themeItem.type &&
     !moduleConfig.layers.some((layer) => layer.id === themeItem.id)
   ) {
+    if (type3D) themeItem.type = type3D;
     let layerConfig: LayerConfig = {
       id: themeItem.id,
       name: themeItem.name,
@@ -132,12 +131,24 @@ export function mapThemeToConfig(
           },
         };
         break;
-      case '3D':
+      case 'data3d':
         layerConfig = {
           ...layerConfig,
           url: `${pluginConfig.lux3dUrl}/${themeItem.name}/tileset.json`,
           type: 'CesiumTilesetLayer',
           style: get3dStyle(themeItem),
+        };
+        break;
+      case 'mesh3d':
+        layerConfig = {
+          ...layerConfig,
+          url: `${pluginConfig.lux3dUrl}/mesh3D/mesh3D_2020_v2/${themeItem.layer}/tileset.json`,
+          type: 'CesiumTilesetLayer',
+          offset: [
+            0,
+            0,
+            (themeItem.metadata?.ol3d_options?.heightOffset || 0) + 10, //display mesh 10m above ground to avoid "overlaps" of terrain and mesh
+          ],
         };
         break;
       default:
@@ -189,7 +200,7 @@ export function mapThemeToConfig(
         moduleConfig,
         child,
         translations,
-        is3D,
+        type3D,
         subParentName,
       );
     });
