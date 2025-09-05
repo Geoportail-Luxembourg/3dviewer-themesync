@@ -6,6 +6,7 @@ import {
   type ModuleConfig,
   LOCALES,
   type PluginConfig,
+  type ClippingPolygon,
 } from './model';
 
 function getFormat(imageType?: string): string {
@@ -150,6 +151,20 @@ export function mapThemeToConfig(
             (themeItem.metadata?.ol3d_options?.heightOffset || 0) + 10, //display mesh 10m above ground to avoid "overlaps" of terrain and mesh
           ],
         };
+        if (themeItem.metadata?.ol3d_options?.clipping_polygons) {
+          themeItem.metadata.ol3d_options.clipping_polygons.forEach(
+            (polygon, index) => {
+              const clippingPolygon: ClippingPolygon = {
+                name: `ClippingPolygon_${themeItem.name}_${index}`,
+                activeOnStartup: true,
+                terrain: false,
+                layerNames: [themeItem.name],
+                coordinates: polygon,
+              };
+              moduleConfig.clippingPolygons.push(clippingPolygon);
+            },
+          );
+        }
         break;
       default:
         break;

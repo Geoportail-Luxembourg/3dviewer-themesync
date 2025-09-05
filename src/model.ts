@@ -31,6 +31,8 @@ export interface ThemeItem {
       heightOffset?: number;
       cesium3DTileStyle?: Record<string, unknown>;
       vcsHiddenObjectIds?: string[];
+      // eslint-disable-next-line
+      clipping_polygons?: number[][][];
     };
   } & Record<string, unknown>;
 }
@@ -96,9 +98,18 @@ export interface ContentTreeItemConfig {
   tooltip?: string;
 }
 
+export interface ClippingPolygon {
+  name: string;
+  activeOnStartup: boolean;
+  terrain: boolean;
+  layerNames: string[];
+  coordinates: number[][];
+}
+
 export interface ModuleConfig {
   _id: string; // for theme modules, this corresponds to the theme.name
   layers: LayerConfig[];
+  clippingPolygons: ClippingPolygon[];
   contentTree: ContentTreeItemConfig[];
   i18n: Array<I18nConfigurationItem & { fr: object; lb: object }>;
 }

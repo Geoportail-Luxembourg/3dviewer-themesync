@@ -43,6 +43,7 @@ export default function lux3dviewerThemesyncPlugin(
           },
         },
       ],
+      clippingPolygons: [],
       contentTree: [],
       i18n: [
         {
