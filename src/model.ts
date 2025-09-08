@@ -32,7 +32,7 @@ export interface ThemeItem {
       cesium3DTileStyle?: Record<string, unknown>;
       vcsHiddenObjectIds?: string[];
       // eslint-disable-next-line
-      clipping_polygons?: number[][][];
+      vcsClippingPolygons?: number[][][];
     };
   } & Record<string, unknown>;
 }

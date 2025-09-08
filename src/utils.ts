@@ -148,8 +148,8 @@ export function mapThemeToConfig(
           offset: [0, 0, themeItem.metadata?.ol3d_options?.heightOffset || 0],
           exclusiveGroups: ['mesh'],
         };
-        if (themeItem.metadata?.ol3d_options?.clipping_polygons) {
-          themeItem.metadata.ol3d_options.clipping_polygons.forEach(
+        if (themeItem.metadata?.ol3d_options?.vcsClippingPolygons) {
+          themeItem.metadata.ol3d_options.vcsClippingPolygons.forEach(
             (polygon, index) => {
               const clippingPolygon: ClippingPolygon = {
                 name: `ClippingPolygon_${themeItem.name}_${index}`,
