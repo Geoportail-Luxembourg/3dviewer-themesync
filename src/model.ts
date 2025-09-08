@@ -31,7 +31,6 @@ export interface ThemeItem {
       heightOffset?: number;
       cesium3DTileStyle?: Record<string, unknown>;
       vcsHiddenObjectIds?: string[];
-      // eslint-disable-next-line
       vcsClippingPolygons?: number[][][];
     };
   } & Record<string, unknown>;
