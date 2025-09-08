@@ -39,12 +39,19 @@ export default function lux3dviewerThemesyncPlugin(
           activeOnStartup: true,
           requestVertexNormals: true,
           properties: {
-            title: 'Luxembourg Terrain',
+            title: 'Terrain',
           },
+          exclusiveGroups: ['mesh'],
         },
       ],
       clippingPolygons: [],
-      contentTree: [],
+      contentTree: [
+        {
+          name: 'terrain',
+          type: 'LayerContentTreeItem',
+          layerName: 'LuxBaseTerrain',
+        },
+      ],
       i18n: [
         {
           name: 'layerTranslations2d',

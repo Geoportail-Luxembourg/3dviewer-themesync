@@ -145,11 +145,8 @@ export function mapThemeToConfig(
           ...layerConfig,
           url: `${pluginConfig.lux3dUrl}/mesh3D/mesh3D_2020_v2/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
-          offset: [
-            0,
-            0,
-            (themeItem.metadata?.ol3d_options?.heightOffset || 0) + 10, //display mesh 10m above ground to avoid "overlaps" of terrain and mesh
-          ],
+          offset: [0, 0, themeItem.metadata?.ol3d_options?.heightOffset || 0],
+          exclusiveGroups: ['mesh'],
         };
         if (themeItem.metadata?.ol3d_options?.clipping_polygons) {
           themeItem.metadata.ol3d_options.clipping_polygons.forEach(

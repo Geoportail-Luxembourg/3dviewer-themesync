@@ -86,6 +86,7 @@ export interface LayerConfig {
   };
   requestVertexNormals?: boolean;
   offset?: number[];
+  exclusiveGroups?: string[];
 }
 
 export interface ContentTreeItemConfig {
