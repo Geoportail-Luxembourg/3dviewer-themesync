@@ -22,6 +22,7 @@ export interface ThemeItem {
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
   metadata?: {
+    exclusion?: string;
     // eslint-disable-next-line  @typescript-eslint/naming-convention
     legend_name?: string;
     // eslint-disable-next-line  @typescript-eslint/naming-convention
@@ -72,6 +73,7 @@ export interface LayerConfig {
     format: string;
     transparent: boolean;
   };
+  exclusiveGroups?: Array<number|string>;
   extent?: {
     coordinates: number[];
     projection: {

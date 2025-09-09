@@ -103,6 +103,11 @@ export function mapThemeToConfig(
       },
       type: `${themeItem.type}Layer`,
     };
+
+    if (themeItem.metadata?.exclusion) {
+      layerConfig.exclusiveGroups = JSON.parse(themeItem.metadata?.exclusion);
+    }
+
     switch (themeItem.type) {
       case 'WMS':
         layerConfig = {
