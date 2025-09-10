@@ -166,6 +166,7 @@ export function mapThemeToConfig(
       default:
         break;
     }
+    moduleConfig.layers.push(layerConfig);
   }
 
   // fill content tree

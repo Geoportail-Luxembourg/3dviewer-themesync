@@ -76,7 +76,7 @@ export interface LayerConfig {
     format: string;
     transparent: boolean;
   };
-  exclusiveGroups?: Array<number|string>;
+  exclusiveGroups?: Array<number | string>;
   extent?: {
     coordinates: number[];
     projection: {
@@ -85,7 +85,6 @@ export interface LayerConfig {
   };
   requestVertexNormals?: boolean;
   offset?: number[];
-  exclusiveGroups?: string[];
 }
 
 export interface ContentTreeItemConfig {
