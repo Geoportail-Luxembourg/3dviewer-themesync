@@ -27,6 +27,8 @@ export interface ThemeItem {
     // eslint-disable-next-line  @typescript-eslint/naming-convention
     legend_name?: string;
     // eslint-disable-next-line  @typescript-eslint/naming-convention
+    ol3d_defaultlayer?: boolean;
+    // eslint-disable-next-line  @typescript-eslint/naming-convention
     ol3d_options?: Record<string, unknown> & {
       heightOffset?: number;
       cesium3DTileStyle?: Record<string, unknown>;
