@@ -17,6 +17,7 @@ export interface ThemeItem {
   name: string;
   layer?: string;
   source?: string;
+  url?: string;
   style?: string | LayerStyle;
   type?: 'WMS' | 'WMTS' | 'data3d' | 'mesh3d';
   imageType?: string;

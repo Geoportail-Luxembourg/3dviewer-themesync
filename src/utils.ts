@@ -75,7 +75,8 @@ export function mapThemeToConfig(
   if (
     themeItem &&
     themeItem.type &&
-    !moduleConfig.layers.some((layer) => layer.id === themeItem.id)
+    !moduleConfig.layers.some((layer) => layer.id === themeItem.id) &&
+    themeItem.name !== 'wintermesh'
   ) {
     if (type3D) themeItem.type = type3D;
     let layerConfig: LayerConfig = {
@@ -143,7 +144,7 @@ export function mapThemeToConfig(
       case 'mesh3d':
         layerConfig = {
           ...layerConfig,
-          url: `${pluginConfig.lux3dUrl}/mesh3D/mesh3D_2020_v2/${themeItem.layer}/tileset.json`,
+          url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
           offset: [0, 0, themeItem.metadata?.ol3d_options?.heightOffset || 0],
           exclusiveGroups: ['mesh'],
