@@ -81,7 +81,7 @@ export interface LayerConfig {
     format: string;
     transparent: boolean;
   };
-  exclusiveGroups?: Array<number | string>;
+  exclusiveGroups?: Array<string | symbol>;
   extent?: {
     coordinates: number[];
     projection: {
@@ -111,7 +111,7 @@ export interface ClippingPolygon {
 }
 
 export interface ModuleConfig {
-  _id: string; // for theme modules, this corresponds to the theme.name
+  _id: string;
   layers: LayerConfig[];
   clippingPolygons: ClippingPolygon[];
   contentTree: ContentTreeItemConfig[];
