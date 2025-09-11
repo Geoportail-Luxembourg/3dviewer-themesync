@@ -7,6 +7,7 @@ import {
   LOCALES,
   type PluginConfig,
   type ClippingPolygon,
+  type Ol3dType,
 } from './model';
 
 function getFormat(imageType?: string): string {
@@ -68,7 +69,7 @@ export function mapThemeToConfig(
   moduleConfig: ModuleConfig,
   themeItem: ThemeItem,
   translations: Record<string, Record<string, string>>,
-  type3D?: 'data3d' | 'mesh3d',
+  type3D?: Ol3dType,
   parentName?: string,
 ): void {
   // fill layers
@@ -124,7 +125,7 @@ export function mapThemeToConfig(
       case 'WMTS':
         layerConfig = {
           ...layerConfig,
-          url: `${pluginConfig.luxWmtsUrl}/${themeItem.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
+          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
           extent: {
             coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
@@ -133,15 +134,15 @@ export function mapThemeToConfig(
           },
         };
         break;
-      case 'data3d':
+      case 'data':
         layerConfig = {
           ...layerConfig,
-          url: `${pluginConfig.lux3dUrl}/${themeItem.name}/tileset.json`,
+          url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
           style: get3dStyle(themeItem),
         };
         break;
-      case 'mesh3d':
+      case 'mesh':
         layerConfig = {
           ...layerConfig,
           url: `${themeItem.url}/${themeItem.layer}/tileset.json`,

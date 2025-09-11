@@ -64,19 +64,13 @@ export default function lux3dviewerThemesyncPlugin(
     };
 
     themes?.forEach((theme: Theme) => {
-      let type3D: 'data3d' | 'mesh3d' | undefined;
-      if (theme.name === '3D Layers') {
-        type3D = 'data3d';
-      } else if (theme.name === '3D Meshes') {
-        type3D = 'mesh3d';
-      }
       mapThemeToConfig(
         vcsUiApp,
         pluginConfig,
         moduleConfig,
         theme as ThemeItem,
         translations,
-        type3D,
+        theme.metadata?.ol3d_type,
       );
     });
 

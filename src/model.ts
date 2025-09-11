@@ -8,7 +8,6 @@ export type PluginConfig = {
   luxI18nUrl: string;
   luxOwsUrl: string;
   luxWmtsUrl: string;
-  lux3dUrl: string;
   luxLegendUrl: string;
 };
 
@@ -19,7 +18,7 @@ export interface ThemeItem {
   source?: string;
   url?: string;
   style?: string | LayerStyle;
-  type?: 'WMS' | 'WMTS' | 'data3d' | 'mesh3d';
+  type?: 'WMS' | 'WMTS' | Ol3dType;
   imageType?: string;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
@@ -32,10 +31,12 @@ export interface ThemeItem {
       heightOffset?: number;
       cesium3DTileStyle?: Record<string, unknown>;
       vcsHiddenObjectIds?: string[];
-      vcsClippingPolygons?: number[][][];
+      vcsClippingPolygons?: Array<Array<[number, number]>>;
     };
   } & Record<string, unknown>;
 }
+
+export type Ol3dType = 'data' | 'mesh';
 
 export interface Theme {
   id: number;
@@ -44,6 +45,8 @@ export interface Theme {
   metadata?: {
     // eslint-disable-next-line
     display_in_switcher?: boolean;
+    // eslint-disable-next-line
+    ol3d_type?: Ol3dType;
   };
 }
 
