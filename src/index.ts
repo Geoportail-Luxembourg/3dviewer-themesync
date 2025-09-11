@@ -99,13 +99,12 @@ export default function lux3dviewerThemesyncPlugin(
       const themesFiltered = themes
         .filter(
           (theme) =>
-            theme.name === '3D Layers' ||
-            theme.name === '3D Meshes' ||
+            theme.metadata?.ol3d_type ||
             theme.metadata?.display_in_switcher === true,
         )
         .sort((a, b) => {
-          if (a.name === '3D Layers' || a.name === '3D Meshes') return -1;
-          if (b.name === '3D Layers' || b.name === '3D Meshes') return 1;
+          if (a.metadata?.ol3d_type) return -1;
+          if (b.metadata?.ol3d_type) return 1;
           return 0;
         });
 
