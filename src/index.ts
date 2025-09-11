@@ -39,11 +39,19 @@ export default function lux3dviewerThemesyncPlugin(
           activeOnStartup: true,
           requestVertexNormals: true,
           properties: {
-            title: 'Luxembourg Terrain',
+            title: 'Terrain',
           },
+          exclusiveGroups: ['mesh'],
         },
       ],
-      contentTree: [],
+      clippingPolygons: [],
+      contentTree: [
+        {
+          name: 'terrain',
+          type: 'LayerContentTreeItem',
+          layerName: 'LuxBaseTerrain',
+        },
+      ],
       i18n: [
         {
           name: 'layerTranslations2d',
@@ -55,14 +63,14 @@ export default function lux3dviewerThemesyncPlugin(
       ],
     };
 
-    themes?.forEach((themeItem: ThemeItem) => {
+    themes?.forEach((theme: Theme) => {
       mapThemeToConfig(
         vcsUiApp,
         pluginConfig,
         moduleConfig,
-        themeItem,
+        theme as ThemeItem,
         translations,
-        themeItem.name === '3D Layers',
+        theme.metadata?.ol3d_type,
       );
     });
 
@@ -92,11 +100,12 @@ export default function lux3dviewerThemesyncPlugin(
         .filter(
           (theme) =>
             theme.name === '3D Layers' ||
+            theme.name === '3D Meshes' ||
             theme.metadata?.display_in_switcher === true,
         )
         .sort((a, b) => {
-          if (a.name === '3D Layers') return -1;
-          if (b.name === '3D Layers') return 1;
+          if (a.name === '3D Layers' || a.name === '3D Meshes') return -1;
+          if (b.name === '3D Layers' || b.name === '3D Meshes') return 1;
           return 0;
         });
 

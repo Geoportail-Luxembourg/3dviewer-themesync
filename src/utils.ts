@@ -6,6 +6,8 @@ import {
   type ModuleConfig,
   LOCALES,
   type PluginConfig,
+  type ClippingPolygon,
+  type Ol3dType,
 } from './model';
 
 function getFormat(imageType?: string): string {
@@ -67,17 +69,17 @@ export function mapThemeToConfig(
   moduleConfig: ModuleConfig,
   themeItem: ThemeItem,
   translations: Record<string, Record<string, string>>,
-  is3D = false,
+  type3D?: Ol3dType,
   parentName?: string,
 ): void {
   // fill layers
-  if (is3D) themeItem.type = '3D';
-
   if (
     themeItem &&
     themeItem.type &&
-    !moduleConfig.layers.some((layer) => layer.id === themeItem.id)
+    !moduleConfig.layers.some((layer) => layer.id === themeItem.id) &&
+    themeItem.name !== 'wintermesh'
   ) {
+    if (type3D) themeItem.type = type3D;
     let layerConfig: LayerConfig = {
       id: themeItem.id,
       name: themeItem.name,
@@ -123,7 +125,7 @@ export function mapThemeToConfig(
       case 'WMTS':
         layerConfig = {
           ...layerConfig,
-          url: `${pluginConfig.luxWmtsUrl}/${themeItem.name}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
+          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
           extent: {
             coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
@@ -132,18 +134,40 @@ export function mapThemeToConfig(
           },
         };
         break;
-      case '3D':
+      case 'data':
         layerConfig = {
           ...layerConfig,
-          url: `${pluginConfig.lux3dUrl}/${themeItem.name}/tileset.json`,
+          url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
           style: get3dStyle(themeItem),
         };
         break;
+      case 'mesh':
+        layerConfig = {
+          ...layerConfig,
+          url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
+          type: 'CesiumTilesetLayer',
+          offset: [0, 0, themeItem.metadata?.ol3d_options?.heightOffset || 0],
+          exclusiveGroups: ['mesh'],
+        };
+        if (themeItem.metadata?.ol3d_options?.vcsClippingPolygons) {
+          themeItem.metadata.ol3d_options.vcsClippingPolygons.forEach(
+            (polygon, index) => {
+              const clippingPolygon: ClippingPolygon = {
+                name: `ClippingPolygon_${themeItem.name}_${index}`,
+                activeOnStartup: true,
+                terrain: false,
+                layerNames: [themeItem.name],
+                coordinates: polygon,
+              };
+              moduleConfig.clippingPolygons.push(clippingPolygon);
+            },
+          );
+        }
+        break;
       default:
         break;
     }
-
     moduleConfig.layers.push(layerConfig);
   }
 
@@ -189,7 +213,7 @@ export function mapThemeToConfig(
         moduleConfig,
         child,
         translations,
-        is3D,
+        type3D,
         subParentName,
       );
     });

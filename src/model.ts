@@ -8,16 +8,17 @@ export type PluginConfig = {
   luxI18nUrl: string;
   luxOwsUrl: string;
   luxWmtsUrl: string;
-  lux3dUrl: string;
   luxLegendUrl: string;
 };
 
 export interface ThemeItem {
   id: number;
   name: string;
+  layer?: string;
   source?: string;
+  url?: string;
   style?: string | LayerStyle;
-  type?: 'WMS' | 'WMTS' | '3D';
+  type?: 'WMS' | 'WMTS' | Ol3dType;
   imageType?: string;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
@@ -27,11 +28,15 @@ export interface ThemeItem {
     legend_name?: string;
     // eslint-disable-next-line  @typescript-eslint/naming-convention
     ol3d_options?: Record<string, unknown> & {
+      heightOffset?: number;
       cesium3DTileStyle?: Record<string, unknown>;
       vcsHiddenObjectIds?: string[];
+      vcsClippingPolygons?: Array<Array<[number, number]>>;
     };
   } & Record<string, unknown>;
 }
+
+export type Ol3dType = 'data' | 'mesh';
 
 export interface Theme {
   id: number;
@@ -40,6 +45,8 @@ export interface Theme {
   metadata?: {
     // eslint-disable-next-line
     display_in_switcher?: boolean;
+    // eslint-disable-next-line
+    ol3d_type?: Ol3dType;
   };
 }
 
@@ -73,7 +80,7 @@ export interface LayerConfig {
     format: string;
     transparent: boolean;
   };
-  exclusiveGroups?: Array<number|string>;
+  exclusiveGroups?: Array<number | string>;
   extent?: {
     coordinates: number[];
     projection: {
@@ -81,6 +88,7 @@ export interface LayerConfig {
     };
   };
   requestVertexNormals?: boolean;
+  offset?: number[];
 }
 
 export interface ContentTreeItemConfig {
@@ -93,9 +101,18 @@ export interface ContentTreeItemConfig {
   tooltip?: string;
 }
 
+export interface ClippingPolygon {
+  name: string;
+  activeOnStartup: boolean;
+  terrain: boolean;
+  layerNames: string[];
+  coordinates: number[][];
+}
+
 export interface ModuleConfig {
   _id: string; // for theme modules, this corresponds to the theme.name
   layers: LayerConfig[];
+  clippingPolygons: ClippingPolygon[];
   contentTree: ContentTreeItemConfig[];
   i18n: Array<I18nConfigurationItem & { fr: object; lb: object }>;
 }
