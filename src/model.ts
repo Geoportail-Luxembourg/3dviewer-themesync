@@ -33,6 +33,7 @@ export interface ThemeItem {
       vcsHiddenObjectIds?: string[];
       vcsClippingPolygons?: Array<Array<[number, number]>>;
     };
+    is_queryable?: boolean;
   } & Record<string, unknown>;
 }
 
@@ -72,7 +73,7 @@ export interface LayerConfig {
   layers?: string;
   activeOnStartup: boolean;
   allowPicking?: boolean;
-  properties?: Record<string, unknown>;
+  properties: Record<string, unknown>;
   type: string;
   url?: string;
   tilingSchema?: string;

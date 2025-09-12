@@ -87,7 +87,7 @@ export function mapThemeToConfig(
       style: themeItem.style,
       layers: themeItem.name,
       activeOnStartup: false,
-      allowPicking: false,
+      allowPicking: !!themeItem.metadata?.is_queryable,
       properties: {
         title: `layers.${themeItem.name}.title`, // use translations for layers (content tree and elsewhere). does not contain nodes
         legend: [
@@ -139,8 +139,10 @@ export function mapThemeToConfig(
           ...layerConfig,
           url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
-          style: get3dStyle(themeItem),
+          style: get3dStyle(themeItem)
         };
+        layerConfig.allowPicking = true;
+        layerConfig.properties.featureInfo = "balloon3d";
         break;
       case 'mesh':
         layerConfig = {
