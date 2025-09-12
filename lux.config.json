@@ -11,6 +11,10 @@
   },
   "uiConfig": [
     {
+      "name": "contentTreeActiveOnStartup",
+      "value": true
+    },
+    {
       "name": "imprint",
       "value": {
         "url": "https://www.geoportail.lu/fr/propos/"
@@ -601,64 +605,7 @@
       "fallbackToCurrentMap": true
     }
   ],
-  "layers": [
-    {
-      "type": "CesiumTilesetLayer",
-      "name": "mesh_surface",
-      "url": "https://berlin-wab.virtualcitymap.de/datasource-data/baselayer/mesh_2023/",
-      "activeOnStartup": false,
-      "allowPicking": false,
-      "screenSpaceError": 16,
-      "screenSpaceErrorMobile": 32,
-      "tilesetOptions": {
-        "skipLevelOfDetail": true,
-        "enableCollision": true
-      },
-      "exclusiveGroups": ["bldg"],
-      "properties": {
-        "title": "3D-Mesh 2020",
-        "attributions": {
-          "provider": "Berlin Partner für Wirtschaft und Technologie",
-          "url": "https://www.berlin-partner.de",
-          "year": "2020"
-        }
-      }
-    },
-    {
-      "name": "Openstreetmap OSM Cache",
-      "url": "https://osm.virtualcitymap.de/mapproxy/wmts/osm/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png",
-      "type": "WMTSLayer",
-      "datasourceId": "2jEtgBemjJaSNx3AH",
-      "activeOnStartup": true,
-      "layer": "osm",
-      "wmtsStyle": "default",
-      "format": "image/png",
-      "tileMatrixSetID": "osm_grid",
-      "tileMatrixPrefix": "",
-      "maxLevel": 19,
-      "tilingSchema": "mercator",
-      "extent": {
-        "coordinates": [-180, -85, 180, 85],
-        "projection": {
-          "epsg": "EPSG:4326"
-        }
-      },
-      "opacity": "1",
-      "hiddenObjectIds": [],
-      "numberOfLevelZeroTilesX": 1,
-      "numberOfLevelZeroTilesY": 1,
-      "exclusiveGroups": ["base"],
-      "properties": {
-        "title": "OpenStreetMap",
-        "showInOverviewMap": true,
-        "attributions": {
-          "provider": "OpenStreetMap contributors",
-          "url": "http://www.openstreetmap.org/",
-          "year": "2019"
-        }
-      }
-    }
-  ],
+  "layers": [],
   "viewpoints": [
     {
       "name": "luxembourg",
