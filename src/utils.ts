@@ -101,6 +101,11 @@ export function mapThemeToConfig(
             ), // Nice to have: update the legend when switching lang, but this is not implemented in vcmap-ui yet
           },
         ],
+        ...(themeItem.metadata?.attribution !== undefined && {
+          attributions: {
+            provider: themeItem.metadata.attribution, // TODO: display html attributions correctly
+          },
+        }),
         ...themeItem.properties,
       },
       type: `${themeItem.type}Layer`,
@@ -108,6 +113,9 @@ export function mapThemeToConfig(
 
     if (themeItem.metadata?.exclusion) {
       layerConfig.exclusiveGroups = JSON.parse(themeItem.metadata?.exclusion);
+    }
+    if (themeItem.isBaselayer) {
+      layerConfig.exclusiveGroups?.push('baselayer');
     }
 
     switch (themeItem.type) {
@@ -125,13 +133,22 @@ export function mapThemeToConfig(
       case 'WMTS':
         layerConfig = {
           ...layerConfig,
-          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
+          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/${themeItem.matrixSet}/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
+          format: themeItem.imageType,
           extent: {
-            coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
+            coordinates: themeItem.isBaselayer
+              ? [-180, -85, 180, 85]
+              : [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
               epsg: 'EPSG:4326',
             },
           },
+          ...(themeItem.layer === pluginConfig.luxDefaultBaselayer && {
+            activeOnStartup: true,
+          }),
+          ...(themeItem.isBaselayer && {
+            zIndex: 0,
+          }),
         };
         break;
       case 'data':
