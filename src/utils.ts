@@ -101,11 +101,6 @@ export function mapThemeToConfig(
             ), // Nice to have: update the legend when switching lang, but this is not implemented in vcmap-ui yet
           },
         ],
-        ...(themeItem.metadata?.attribution !== undefined && {
-          attributions: {
-            provider: themeItem.metadata.attribution, // TODO: display html attributions correctly
-          },
-        }),
         ...themeItem.properties,
       },
       type: `${themeItem.type}Layer`,

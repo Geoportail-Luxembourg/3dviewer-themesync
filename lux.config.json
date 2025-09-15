@@ -594,7 +594,19 @@
       "fogDensityMobile": 0.0004,
       "fogScreenSpaceError": 2,
       "fogScreenSpaceErrorMobile": 4,
-      "useOriginalCesiumShader": false
+      "useOriginalCesiumShader": false,
+      "properties": {
+        "attributions": [
+          {
+            "provider": "MapTiler",
+            "url": "https://www.maptiler.com/copyright/"
+          },
+          {
+            "provider": "OpenStreetMap contributors for data outside of Luxembourg",
+            "url": "https://openstreetmap.org/copyright"
+          }
+        ]
+      }
     },
     {
       "name": "Oblique Map",
