@@ -139,16 +139,18 @@ export function mapThemeToConfig(
           ...layerConfig,
           url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
-          style: get3dStyle(themeItem)
+          style: get3dStyle(themeItem),
+          activeOnStartup: themeItem.metadata?.ol3d_defaultlayer || false,
         };
         layerConfig.allowPicking = true;
-        layerConfig.properties.featureInfo = "balloon3d";
+        layerConfig.properties.featureInfo = 'balloon3d';
         break;
       case 'mesh':
         layerConfig = {
           ...layerConfig,
           url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
+          // activeOnStartup: do not recover ol3d_defaultlayer value for mesh as exclusive terrain is already activeOnStartup
           offset: [0, 0, themeItem.metadata?.ol3d_options?.heightOffset || 0],
           exclusiveGroups: ['mesh'],
         };

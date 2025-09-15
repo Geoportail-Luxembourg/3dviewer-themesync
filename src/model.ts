@@ -27,6 +27,8 @@ export interface ThemeItem {
     // eslint-disable-next-line  @typescript-eslint/naming-convention
     legend_name?: string;
     // eslint-disable-next-line  @typescript-eslint/naming-convention
+    ol3d_defaultlayer?: boolean;
+    // eslint-disable-next-line  @typescript-eslint/naming-convention
     ol3d_options?: Record<string, unknown> & {
       heightOffset?: number;
       cesium3DTileStyle?: Record<string, unknown>;
@@ -81,7 +83,7 @@ export interface LayerConfig {
     format: string;
     transparent: boolean;
   };
-  exclusiveGroups?: Array<number | string>;
+  exclusiveGroups?: Array<string | symbol>;
   extent?: {
     coordinates: number[];
     projection: {
@@ -111,7 +113,7 @@ export interface ClippingPolygon {
 }
 
 export interface ModuleConfig {
-  _id: string; // for theme modules, this corresponds to the theme.name
+  _id: string;
   layers: LayerConfig[];
   clippingPolygons: ClippingPolygon[];
   contentTree: ContentTreeItemConfig[];
