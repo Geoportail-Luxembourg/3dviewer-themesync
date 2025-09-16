@@ -9,6 +9,7 @@ export type PluginConfig = {
   luxOwsUrl: string;
   luxWmtsUrl: string;
   luxLegendUrl: string;
+  luxDefaultBaselayer: string;
 };
 
 export interface ThemeItem {
@@ -20,9 +21,12 @@ export interface ThemeItem {
   style?: string | LayerStyle;
   type?: 'WMS' | 'WMTS' | Ol3dType;
   imageType?: string;
+  matrixSet?: string;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
+  isBaselayer?: boolean;
   metadata?: {
+    attribution?: string;
     exclusion?: string;
     // eslint-disable-next-line  @typescript-eslint/naming-convention
     legend_name?: string;
@@ -56,6 +60,8 @@ export interface Theme {
 export interface ThemesResponse {
   themes: Theme[];
   // eslint-disable-next-line
+  background_layers: ThemeItem[];
+  // eslint-disable-next-line
   lux_3d: {
     // eslint-disable-next-line
     terrain_url: string;
@@ -78,6 +84,7 @@ export interface LayerConfig {
   properties: Record<string, unknown>;
   type: string;
   url?: string;
+  format?: string;
   tilingSchema?: string;
   parameters?: {
     format: string;
@@ -92,6 +99,7 @@ export interface LayerConfig {
   };
   requestVertexNormals?: boolean;
   offset?: number[];
+  zIndex?: number;
 }
 
 export interface ContentTreeItemConfig {

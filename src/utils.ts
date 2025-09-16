@@ -104,10 +104,19 @@ export function mapThemeToConfig(
         ...themeItem.properties,
       },
       type: `${themeItem.type}Layer`,
+      ...(themeItem.layer === pluginConfig.luxDefaultBaselayer && {
+        activeOnStartup: true,
+      }),
+      ...(themeItem.isBaselayer && {
+        zIndex: 0,
+      }),
     };
 
     if (themeItem.metadata?.exclusion) {
       layerConfig.exclusiveGroups = JSON.parse(themeItem.metadata?.exclusion);
+    }
+    if (themeItem.isBaselayer) {
+      layerConfig.exclusiveGroups?.push('baselayer');
     }
 
     switch (themeItem.type) {
@@ -125,9 +134,12 @@ export function mapThemeToConfig(
       case 'WMTS':
         layerConfig = {
           ...layerConfig,
-          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/GLOBAL_WEBMERCATOR_4_V3/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
+          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/${themeItem.matrixSet}/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
+          format: themeItem.imageType,
           extent: {
-            coordinates: [5.7357, 49.4478, 6.5286, 50.1826],
+            coordinates: themeItem.isBaselayer
+              ? [-180, -85, 180, 85]
+              : [5.7357, 49.4478, 6.5286, 50.1826],
             projection: {
               epsg: 'EPSG:4326',
             },

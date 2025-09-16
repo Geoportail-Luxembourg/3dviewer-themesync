@@ -55,10 +55,34 @@ export default function lux3dviewerThemesyncPlugin(
       i18n: [
         {
           name: 'layerTranslations2d',
-          fr: { layers: [] },
-          de: { layers: [] },
-          en: { layers: [] },
-          lb: { layers: [] },
+          fr: {
+            layers: {
+              basemap: {
+                title: 'Fond de carte',
+              },
+            },
+          },
+          de: {
+            layers: {
+              basemap: {
+                title: 'Kartenhintergrund',
+              },
+            },
+          },
+          en: {
+            layers: {
+              basemap: {
+                title: 'Base map',
+              },
+            },
+          },
+          lb: {
+            layers: {
+              basemap: {
+                title: 'Kaartenhannergrond',
+              },
+            },
+          },
         },
       ],
     };
@@ -95,20 +119,29 @@ export default function lux3dviewerThemesyncPlugin(
       ).then((response) => response.json());
       const { themes } = themesResponse;
       const terrainUrl = themesResponse.lux_3d.terrain_url;
+      const baselayers = themesResponse.background_layers.map(
+        (layer: ThemeItem) => ({
+          ...layer,
+          isBaselayer: true,
+        }),
+      );
 
       const themesFiltered = themes
         .filter(
           (theme) =>
-            theme.name === '3D Layers' ||
-            theme.name === '3D Meshes' ||
+            theme.metadata?.ol3d_type ||
             theme.metadata?.display_in_switcher === true,
         )
         .sort((a, b) => {
-          if (a.name === '3D Layers' || a.name === '3D Meshes') return -1;
-          if (b.name === '3D Layers' || b.name === '3D Meshes') return 1;
+          if (a.metadata?.ol3d_type) return -1;
+          if (b.metadata?.ol3d_type) return 1;
           return 0;
         });
-
+      themesFiltered.unshift({
+        id: -1,
+        name: 'basemap',
+        children: baselayers,
+      });
       // fetch and flatten translations
       const translations = await Promise.all(
         LOCALES.map((locale) =>
