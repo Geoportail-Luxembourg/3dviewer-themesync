@@ -4,13 +4,13 @@
 
 This plugin fetches themes from the [Geoportail Luxembourg](https://map.geoportail.lu/) and maps them to a VCS module config. The module config includes `layers`, `contentTree` and `i18n` (for translations) entries.
 
-## URL config parameters
+## Config parameters
 
-These URLs must be indicated in the plugin config when deployed:
+These params (mostly URLs) must be indicated in the plugin config when deployed:
 
 - `luxThemesUrl`- URL to themes API
 - `luxI18nUrl`- URL to translations
 - `luxOwsUrl`- URL to OGC web services
 - `luxWmtsUrl`- URL to WMTS
-- `lux3dUrl`- URL to 3D tiles
 - `luxLegendUrl` - URL to legends
+- `luxDefaultBaselayer` - name of the default baselayer to display
