@@ -104,6 +104,12 @@ export function mapThemeToConfig(
         ...themeItem.properties,
       },
       type: `${themeItem.type}Layer`,
+      ...(themeItem.layer === pluginConfig.luxDefaultBaselayer && {
+        activeOnStartup: true,
+      }),
+      ...(themeItem.isBaselayer && {
+        zIndex: 0,
+      }),
     };
 
     if (themeItem.metadata?.exclusion) {
@@ -138,12 +144,6 @@ export function mapThemeToConfig(
               epsg: 'EPSG:4326',
             },
           },
-          ...(themeItem.layer === pluginConfig.luxDefaultBaselayer && {
-            activeOnStartup: true,
-          }),
-          ...(themeItem.isBaselayer && {
-            zIndex: 0,
-          }),
         };
         break;
       case 'data':
