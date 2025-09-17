@@ -39,6 +39,7 @@ export interface ThemeItem {
       vcsHiddenObjectIds?: string[];
       vcsClippingPolygons?: Array<Array<[number, number]>>;
     };
+    // eslint-disable-next-line  @typescript-eslint/naming-convention
     is_queryable?: boolean;
   } & Record<string, unknown>;
 }

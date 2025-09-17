@@ -89,6 +89,9 @@ export function mapThemeToConfig(
       activeOnStartup: false,
       allowPicking: !!themeItem.metadata?.is_queryable,
       properties: {
+        is3DLayer: !!type3D, // For 2d back button
+        luxId: themeItem.id, // For 2d back button
+        luxIsBaselayer: themeItem.isBaselayer, // For 2d back button
         title: `layers.${themeItem.name}.title`, // use translations for layers (content tree and elsewhere). does not contain nodes
         legend: [
           {
