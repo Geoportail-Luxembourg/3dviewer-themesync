@@ -91,6 +91,7 @@ export interface LayerConfig {
     format: string;
     transparent: boolean;
   };
+  featureInfo?: { responseType: string };
   exclusiveGroups?: Array<string | symbol>;
   extent?: {
     coordinates: number[];
