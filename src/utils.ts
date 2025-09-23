@@ -132,6 +132,8 @@ export function mapThemeToConfig(
             format: 'image/png',
             transparent: true,
           },
+          minLevel: 0,
+          maxLevel: 22
         };
         break;
       case 'WMTS':
@@ -147,6 +149,8 @@ export function mapThemeToConfig(
               epsg: 'EPSG:4326',
             },
           },
+          minLevel: 0,
+          maxLevel: 22
         };
         break;
       case 'data':

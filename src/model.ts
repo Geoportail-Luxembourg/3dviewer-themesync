@@ -101,6 +101,8 @@ export interface LayerConfig {
   requestVertexNormals?: boolean;
   offset?: number[];
   zIndex?: number;
+  minLevel?: number,
+  maxLevel?: number // for Cesium zoom quality on raster
 }
 
 export interface ContentTreeItemConfig {
