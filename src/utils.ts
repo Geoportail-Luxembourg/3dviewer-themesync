@@ -85,7 +85,7 @@ export function mapThemeToConfig(
       name: themeItem.name,
       source: themeItem.source,
       style: themeItem.style,
-      layers: themeItem.name,
+      layers: themeItem.id,
       activeOnStartup: false,
       allowPicking: !!themeItem.metadata?.is_queryable,
       properties: {

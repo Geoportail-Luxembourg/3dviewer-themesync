@@ -79,7 +79,7 @@ export interface LayerConfig {
   name: string;
   source?: string;
   style?: string | LayerStyle;
-  layers?: string;
+  layers?: number;
   activeOnStartup: boolean;
   allowPicking?: boolean;
   properties: Record<string, unknown>;
