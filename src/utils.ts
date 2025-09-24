@@ -7,7 +7,7 @@ import {
   LOCALES,
   type PluginConfig,
   type ClippingPolygon,
-  type Ol3dType,
+  type Ol3dLayerType,
 } from './model';
 
 function getFormat(imageType?: string): string {
@@ -69,7 +69,7 @@ export function mapThemeToConfig(
   moduleConfig: ModuleConfig,
   themeItem: ThemeItem,
   translations: Record<string, Record<string, string>>,
-  type3D?: Ol3dType,
+  type3D?: Ol3dLayerType,
   parentName?: string,
 ): void {
   // fill layers
@@ -91,7 +91,7 @@ export function mapThemeToConfig(
       properties: {
         is3DLayer: !!type3D, // For 2d back button
         luxId: themeItem.id, // For 2d back button
-        luxIsBaselayer: themeItem.isBaselayer, // For 2d back button
+        luxIsBaselayer: themeItem.type === 'BaseLayer', // For 2d back button
         title: `layers.${themeItem.name}.title`, // use translations for layers (content tree and elsewhere). does not contain nodes
         legend: [
           {
@@ -110,22 +110,18 @@ export function mapThemeToConfig(
       ...(themeItem.layer === pluginConfig.luxDefaultBaselayer && {
         activeOnStartup: true,
       }),
-      ...(themeItem.isBaselayer && {
-        zIndex: 0,
-      }),
     };
 
     if (themeItem.metadata?.exclusion) {
       layerConfig.exclusiveGroups = JSON.parse(themeItem.metadata?.exclusion);
     }
-    if (themeItem.isBaselayer) {
-      layerConfig.exclusiveGroups?.push('baselayer');
-    }
 
     switch (themeItem.type) {
       case 'WMS':
+      case 'WMTS': // display WMTS as WMS to have getFeatureInfo available
         layerConfig = {
           ...layerConfig,
+          type: 'WMSLayer',
           url: pluginConfig.luxOwsUrl,
           tilingSchema: 'mercator',
           featureInfo: {
@@ -136,26 +132,27 @@ export function mapThemeToConfig(
             transparent: true,
           },
           minLevel: 0,
-          maxLevel: 22
+          maxLevel: 22,
         };
         layerConfig.properties.featureInfo = 'featureInfo2d';
         break;
-      case 'WMTS':
+      case 'BaseLayer':
         layerConfig = {
           ...layerConfig,
+          type: 'WMTSLayer',
           url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/${themeItem.matrixSet}/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
           format: themeItem.imageType,
           extent: {
-            coordinates: themeItem.isBaselayer
-              ? [-180, -85, 180, 85]
-              : [5.7357, 49.4478, 6.5286, 50.1826],
+            coordinates: [-180, -85, 180, 85],
             projection: {
               epsg: 'EPSG:4326',
             },
           },
           minLevel: 0,
-          maxLevel: 22
+          maxLevel: 22,
+          zIndex: 0,
         };
+        layerConfig.exclusiveGroups?.push('baselayer');
         break;
       case 'data':
         layerConfig = {

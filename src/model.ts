@@ -19,12 +19,11 @@ export interface ThemeItem {
   source?: string;
   url?: string;
   style?: string | LayerStyle;
-  type?: 'WMS' | 'WMTS' | Ol3dType;
+  type?: Ol2dLayerType | Ol3dLayerType;
   imageType?: string;
   matrixSet?: string;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
-  isBaselayer?: boolean;
   metadata?: {
     attribution?: string;
     exclusion?: string;
@@ -44,7 +43,8 @@ export interface ThemeItem {
   } & Record<string, unknown>;
 }
 
-export type Ol3dType = 'data' | 'mesh';
+export type Ol3dLayerType = 'data' | 'mesh';
+export type Ol2dLayerType = 'WMS' | 'WMTS' | 'BaseLayer';
 
 export interface Theme {
   id: number;
@@ -54,7 +54,7 @@ export interface Theme {
     // eslint-disable-next-line
     display_in_switcher?: boolean;
     // eslint-disable-next-line
-    ol3d_type?: Ol3dType;
+    ol3d_type?: Ol3dLayerType;
   };
 }
 
