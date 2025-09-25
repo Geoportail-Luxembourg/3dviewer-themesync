@@ -8,6 +8,7 @@ import {
   type Theme,
   type ThemeItem,
   type ThemesResponse,
+  type Ol2dLayerType,
 } from './model';
 import { mapThemeToConfig } from './utils';
 
@@ -122,7 +123,7 @@ export default function lux3dviewerThemesyncPlugin(
       const baselayers = themesResponse.background_layers.map(
         (layer: ThemeItem) => ({
           ...layer,
-          isBaselayer: true,
+          type: 'BaseLayer' as Ol2dLayerType,
         }),
       );
 
