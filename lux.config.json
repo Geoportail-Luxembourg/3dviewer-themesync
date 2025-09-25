@@ -517,8 +517,13 @@
   "featureInfo": [
     {
       "type": "BalloonFeatureInfoView",
-      "name": "balloon3d",
+      "name": "featureInfo3d",
       "attributeKeys": ["BUILDINGID"]
+    },
+    {
+      "type": "IframeWmsFeatureInfoView",
+      "name": "featureInfo2d",
+      "sandbox": "allow-scripts allow-same-origin"
     },
     {
       "type": "TableFeatureInfoView",

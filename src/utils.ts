@@ -85,7 +85,7 @@ export function mapThemeToConfig(
       name: themeItem.name,
       source: themeItem.source,
       style: themeItem.style,
-      layers: themeItem.name,
+      layers: themeItem.id,
       activeOnStartup: false,
       allowPicking: !!themeItem.metadata?.is_queryable,
       properties: {
@@ -128,6 +128,9 @@ export function mapThemeToConfig(
           ...layerConfig,
           url: pluginConfig.luxOwsUrl,
           tilingSchema: 'mercator',
+          featureInfo: {
+            responseType: 'text/html',
+          },
           parameters: {
             format: 'image/png',
             transparent: true,
@@ -135,6 +138,7 @@ export function mapThemeToConfig(
           minLevel: 0,
           maxLevel: 22
         };
+        layerConfig.properties.featureInfo = 'featureInfo2d';
         break;
       case 'WMTS':
         layerConfig = {
@@ -162,7 +166,7 @@ export function mapThemeToConfig(
           activeOnStartup: themeItem.metadata?.ol3d_defaultlayer || false,
         };
         layerConfig.allowPicking = true;
-        layerConfig.properties.featureInfo = 'balloon3d';
+        layerConfig.properties.featureInfo = 'featureInfo3d';
         break;
       case 'mesh':
         layerConfig = {

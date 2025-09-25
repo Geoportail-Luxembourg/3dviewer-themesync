@@ -79,7 +79,7 @@ export interface LayerConfig {
   name: string;
   source?: string;
   style?: string | LayerStyle;
-  layers?: string;
+  layers?: number;
   activeOnStartup: boolean;
   allowPicking?: boolean;
   properties: Record<string, unknown>;
@@ -91,6 +91,7 @@ export interface LayerConfig {
     format: string;
     transparent: boolean;
   };
+  featureInfo?: { responseType: string };
   exclusiveGroups?: Array<string | symbol>;
   extent?: {
     coordinates: number[];
