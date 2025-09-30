@@ -125,7 +125,7 @@ export function mapThemeToConfig(
           url: pluginConfig.luxOwsUrl,
           tilingSchema: 'mercator',
           featureInfo: {
-            responseType: 'text/html',
+            responseType: 'application/json',
           },
           parameters: {
             format: 'image/png',

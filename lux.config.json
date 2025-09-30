@@ -521,9 +521,8 @@
       "attributeKeys": ["BUILDINGID"]
     },
     {
-      "type": "IframeWmsFeatureInfoView",
-      "name": "featureInfo2d",
-      "sandbox": "allow-scripts allow-same-origin"
+      "type": "TableFeatureInfoView",
+      "name": "featureInfo2d"
     },
     {
       "type": "TableFeatureInfoView",
