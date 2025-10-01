@@ -10,6 +10,7 @@ export type PluginConfig = {
   luxWmtsUrl: string;
   luxLegendUrl: string;
   luxDefaultBaselayer: string;
+  luxGeonetworkUrl?: string;
 };
 
 export interface ThemeItem {
@@ -40,6 +41,8 @@ export interface ThemeItem {
     };
     // eslint-disable-next-line  @typescript-eslint/naming-convention
     is_queryable?: boolean;
+    // eslint-disable-next-line  @typescript-eslint/naming-convention
+    metadata_id?: string;
   } & Record<string, unknown>;
 }
 
@@ -83,7 +86,7 @@ export interface LayerConfig {
   activeOnStartup: boolean;
   allowPicking?: boolean;
   properties: Record<string, unknown>;
-  type: string;
+  type?: string;
   url?: string;
   format?: string;
   tilingSchema?: string;
@@ -102,8 +105,8 @@ export interface LayerConfig {
   requestVertexNormals?: boolean;
   offset?: number[];
   zIndex?: number;
-  minLevel?: number,
-  maxLevel?: number // for Cesium zoom quality on raster
+  minLevel?: number;
+  maxLevel?: number; // for Cesium zoom quality on raster
 }
 
 export interface ContentTreeItemConfig {
@@ -114,6 +117,7 @@ export interface ContentTreeItemConfig {
   visible?: boolean;
   icon?: string;
   tooltip?: string;
+  infoUrl?: string;
 }
 
 export interface ClippingPolygon {
