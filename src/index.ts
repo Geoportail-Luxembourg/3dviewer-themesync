@@ -1,4 +1,4 @@
-import { type VcsApp, VcsModule } from '@vcmap/core';
+import { VcsModule } from '@vcmap/core';
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
 import {
@@ -10,7 +10,7 @@ import {
   type ThemesResponse,
   type Ol2dLayerType,
 } from './model';
-import { mapThemeToConfig } from './utils';
+import { setActiveBaselayer, mapThemeToConfig } from './utils';
 
 type PluginState = Record<never, never>;
 
@@ -25,7 +25,7 @@ export default function lux3dviewerThemesyncPlugin(
    * @param translations The translations to use.
    **/
   async function addThemes(
-    vcsUiApp: VcsApp,
+    vcsUiApp: VcsUiApp,
     themes: Theme[],
     terrainUrl: string,
     translations: Record<string, Record<string, string>>,
@@ -159,6 +159,7 @@ export default function lux3dviewerThemesyncPlugin(
       if (themesFiltered.length > 0) {
         await addThemes(vcsUiApp, themesFiltered, terrainUrl, flatTranslations);
       }
+      await setActiveBaselayer(vcsUiApp, pluginConfig, baselayers);
     },
     onVcsAppMounted(): void {},
     /**

@@ -1,4 +1,4 @@
-import type { VcsApp } from '@vcmap/core';
+import type { VcsUiApp } from '@vcmap/ui';
 import {
   type ContentTreeItemConfig,
   type LayerConfig,
@@ -75,7 +75,7 @@ function get3dStyle(themeItem: ThemeItem): LayerStyle | undefined {
 }
 
 export function mapThemeToConfig(
-  vcsUiApp: VcsApp,
+  vcsUiApp: VcsUiApp,
   pluginConfig: PluginConfig,
   moduleConfig: ModuleConfig,
   themeItem: ThemeItem,
@@ -118,9 +118,6 @@ export function mapThemeToConfig(
         ],
         ...themeItem.properties,
       },
-      ...(themeItem.layer === pluginConfig.luxDefaultBaselayer && {
-        activeOnStartup: true,
-      }),
     };
 
     if (themeItem.metadata?.exclusion) {
@@ -262,5 +259,23 @@ export function mapThemeToConfig(
         subParentName,
       );
     });
+  }
+}
+
+export async function setActiveBaselayer(
+  vcsUiApp: VcsUiApp,
+  pluginConfig: PluginConfig,
+  baselayers: ThemeItem[],
+): Promise<void> {
+  const state = await vcsUiApp.getState(true);
+  const stateHasBaselayer = baselayers.some((baseLayer) =>
+    state.layers?.some(
+      (stateLayer: { name: string }) => stateLayer.name === baseLayer.name,
+    ),
+  );
+  if (!stateHasBaselayer) {
+    await vcsUiApp.layers
+      .getByKey(pluginConfig.luxDefaultBaselayer)
+      ?.activate();
   }
 }
