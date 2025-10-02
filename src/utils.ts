@@ -1,5 +1,6 @@
 import type { VcsApp } from '@vcmap/core';
 import {
+  type ContentTreeItemConfig,
   type LayerConfig,
   type LayerStyle,
   type ThemeItem,
@@ -28,6 +29,16 @@ function getLegendUrl(
   };
 
   return `${legendBaseUrl}?${new URLSearchParams(queryParams).toString()}`;
+}
+
+function isoLang2To3(code: string): string {
+  const lang = {
+    fr: 'fre',
+    en: 'eng',
+    de: 'ger',
+    lb: 'ltz',
+  } as const;
+  return lang[code.toLowerCase() as keyof typeof lang];
 }
 
 function getCesium3DTileStyleHideIds(ids: string[]): { show: string } {
@@ -72,13 +83,14 @@ export function mapThemeToConfig(
   type3D?: Ol3dLayerType,
   parentName?: string,
 ): void {
-  // fill layers
-  if (
+  const isLayer =
     themeItem &&
     themeItem.type &&
     !moduleConfig.layers.some((layer) => layer.id === themeItem.id) &&
-    themeItem.name !== 'wintermesh'
-  ) {
+    themeItem.name !== 'wintermesh'; // isLayer in opposition to the sections
+
+  // fill layers
+  if (isLayer) {
     if (type3D) themeItem.type = type3D;
     let layerConfig: LayerConfig = {
       id: themeItem.id,
@@ -106,7 +118,6 @@ export function mapThemeToConfig(
         ],
         ...themeItem.properties,
       },
-      type: `${themeItem.type}Layer`,
       ...(themeItem.layer === pluginConfig.luxDefaultBaselayer && {
         activeOnStartup: true,
       }),
@@ -196,7 +207,7 @@ export function mapThemeToConfig(
   }
 
   // fill content tree
-  moduleConfig.contentTree.push({
+  const contentTreeItem: ContentTreeItemConfig = {
     name: parentName ? `${parentName}.${themeItem.name}` : themeItem.name,
     type:
       themeItem.children && themeItem.children.length > 0
@@ -205,7 +216,17 @@ export function mapThemeToConfig(
     layerName: themeItem.name,
     title: `layers.${themeItem.name}.title`, // use translations for layers and nodes (content tree only)
     visible: true,
-  });
+  };
+
+  if (
+    pluginConfig.luxGeonetworkUrl &&
+    isLayer &&
+    themeItem.metadata?.metadata_id
+  ) {
+    contentTreeItem.infoUrl = `${pluginConfig.luxGeonetworkUrl}/${isoLang2To3(vcsUiApp.locale)}/catalog.search#/metadata/${themeItem.metadata?.metadata_id}`;
+  }
+
+  moduleConfig.contentTree.push(contentTreeItem);
 
   // fill i18n
   function getTranslatedLayers(locale: string): Record<string, object> {
