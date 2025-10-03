@@ -172,6 +172,8 @@ export function mapThemeToConfig(
           type: 'CesiumTilesetLayer',
           style: get3dStyle(themeItem),
           activeOnStartup: themeItem.metadata?.ol3d_defaultlayer || false,
+          screenSpaceError: 16, // default is 16
+          screenSpaceErrorMobile: 2, // default is 32, resulting in too low quality on mobile
         };
         layerConfig.allowPicking = true;
         layerConfig.properties.featureInfo = 'featureInfo3d';
@@ -184,6 +186,8 @@ export function mapThemeToConfig(
           // activeOnStartup: do not recover ol3d_defaultlayer value for mesh as exclusive terrain is already activeOnStartup
           offset: [0, 0, themeItem.metadata?.ol3d_options?.heightOffset || 0],
           exclusiveGroups: ['mesh'],
+          screenSpaceError: 16,
+          screenSpaceErrorMobile: 2,
         };
         if (themeItem.metadata?.ol3d_options?.vcsClippingPolygons) {
           themeItem.metadata.ol3d_options.vcsClippingPolygons.forEach(

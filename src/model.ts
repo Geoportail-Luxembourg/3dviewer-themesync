@@ -107,6 +107,8 @@ export interface LayerConfig {
   zIndex?: number;
   minLevel?: number;
   maxLevel?: number; // for Cesium zoom quality on raster
+  screenSpaceError?: number;
+  screenSpaceErrorMobile?: number;
 }
 
 export interface ContentTreeItemConfig {
