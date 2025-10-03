@@ -27,7 +27,8 @@
     {
       "name": "displayQuality",
       "value": {
-        "startingQualityLevel": "medium",
+        "startingQualityLevel": "high",
+        "startingMobileQualityLevel": "high",
         "low": {
           "sse": 4,
           "fxaa": false,
@@ -593,6 +594,7 @@
       "enableLightning": true,
       "allowSoftwareRendering": false,
       "maximumScreenSpaceError": 2,
+      "maximumScreenSpaceErrorMobile": 2,
       "fogEnabled": true,
       "fogEnabledMobile": true,
       "fogDensity": 0.0002,
