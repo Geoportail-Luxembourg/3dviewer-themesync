@@ -108,6 +108,7 @@ export function mapThemeToConfig(
         legend: [
           {
             type: 'IframeLegendItem',
+            popoutBtn: true,
             src: getLegendUrl(
               pluginConfig.luxLegendUrl,
               themeItem.metadata,
