@@ -23,6 +23,7 @@ export interface ThemeItem {
   type?: Ol2dLayerType | Ol3dLayerType;
   imageType?: string;
   matrixSet?: string;
+  time?: Record<string, unknown>;
   properties?: Record<string, unknown>;
   children?: ThemeItem[];
   metadata?: {

@@ -87,8 +87,8 @@ export function mapThemeToConfig(
     themeItem &&
     themeItem.type &&
     !moduleConfig.layers.some((layer) => layer.id === themeItem.id) &&
-    themeItem.name !== 'wintermesh'; // isLayer in opposition to the sections
-
+    themeItem.name !== 'wintermesh' &&
+    !themeItem.time; // isLayer in opposition to the sections
   // fill layers
   if (isLayer) {
     if (type3D) themeItem.type = type3D;
