@@ -105,18 +105,20 @@ export function mapThemeToConfig(
         luxId: themeItem.id, // For 2d back button
         luxIsBaselayer: themeItem.type === 'BaseLayer', // For 2d back button
         title: `layers.${themeItem.name}.title`, // use translations for layers (content tree and elsewhere). does not contain nodes
-        legend: [
-          {
-            type: 'IframeLegendItem',
-            popoutBtn: true,
-            src: getLegendUrl(
-              pluginConfig.luxLegendUrl,
-              themeItem.metadata,
-              `${themeItem.id}`,
-              vcsUiApp.locale,
-            ), // Nice to have: update the legend when switching lang, but this is not implemented in vcmap-ui yet
-          },
-        ],
+        ...(themeItem.metadata?.legend_name && {
+          legend: [
+            {
+              type: 'IframeLegendItem',
+              popoutBtn: true,
+              src: getLegendUrl(
+                pluginConfig.luxLegendUrl,
+                themeItem.metadata,
+                `${themeItem.id}`,
+                vcsUiApp.locale,
+              ), // Nice to have: update the legend when switching lang, but this is not implemented in vcmap-ui yet
+            },
+          ],
+        }),
         ...themeItem.properties,
       },
     };
