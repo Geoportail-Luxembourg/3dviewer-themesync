@@ -53,6 +53,9 @@
     "vue": "~3.4.38",
     "vuetify": "~3.7.14"
   },
+  "dependencies": {
+    "@zip.js/zip.js": "2.7.34"
+  },
   "devDependencies": {
     "@vcmap/plugin-cli": "^4.1.2",
     "@vcsuite/eslint-config": "^4.0.0",

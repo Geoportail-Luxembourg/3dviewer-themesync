@@ -146,7 +146,7 @@ export default function lux3dviewerThemesyncPlugin(
       // fetch and flatten translations
       const translations = await Promise.all(
         LOCALES.map((locale) =>
-          fetch(`${pluginConfig.luxI18nUrl}/${locale}.json`).then((response) =>
+          fetch(`${pluginConfig.luxI18nUrl}/${locale}.json?_t=${Date.now()}`).then((response) =>
             response.json(),
           ),
         ),
