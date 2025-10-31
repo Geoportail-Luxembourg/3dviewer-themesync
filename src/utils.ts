@@ -218,11 +218,7 @@ export function mapThemeToConfig(
     visible: true,
   };
 
-  if (
-    pluginConfig.luxGeonetworkUrl &&
-    isLayer &&
-    themeItem.metadata?.metadata_id
-  ) {
+  if (pluginConfig.luxGeonetworkUrl && themeItem.metadata?.metadata_id) {
     contentTreeItem.infoUrl = `${pluginConfig.luxGeonetworkUrl}/${isoLang2To3(vcsUiApp.locale)}/catalog.search#/metadata/${themeItem.metadata?.metadata_id}`;
   }
 
