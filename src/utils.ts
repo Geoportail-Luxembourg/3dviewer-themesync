@@ -104,7 +104,7 @@ export function mapThemeToConfig(
         is3DLayer: !!type3D, // For 2d back button
         luxId: themeItem.id, // For 2d back button
         luxIsBaselayer: themeItem.type === 'BaseLayer', // For 2d back button
-        title: `layers.${themeItem.name}.title`, // use translations for layers (content tree and elsewhere). does not contain nodes
+        title: `layers["${themeItem.name}"]["title"]`, // use translations for layers (content tree and elsewhere). does not contain nodes
         ...(themeItem.metadata?.legend_name && {
           legend: [
             {
@@ -214,7 +214,7 @@ export function mapThemeToConfig(
         ? 'NodeContentTreeItem'
         : 'LayerContentTreeItem',
     layerName: themeItem.name,
-    title: `layers.${themeItem.name}.title`, // use translations for layers and nodes (content tree only)
+    title: `layers["${themeItem.name}"]["title"]`, // use translations for layers and nodes (content tree only)
     visible: true,
   };
 
