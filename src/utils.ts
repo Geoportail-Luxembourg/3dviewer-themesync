@@ -217,9 +217,7 @@ export function mapThemeToConfig(
     title: `layers["${themeItem.name}"]["title"]`, // use translations for layers and nodes (content tree only)
     visible: true,
   };
-  if (themeItem.name === 'eau_new_Hochwasserrisikomanagement-Richtlinie [HWRM-RL]') {
 
-  }
   if (pluginConfig.luxGeonetworkUrl && themeItem.metadata?.metadata_id) {
     contentTreeItem.infoUrl = `${pluginConfig.luxGeonetworkUrl}/${isoLang2To3(vcsUiApp.locale)}/catalog.search#/metadata/${themeItem.metadata?.metadata_id}`;
   }
