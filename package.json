@@ -1,6 +1,6 @@
 {
   "name": "@geoportallux/lux-3dviewer-themesync",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
