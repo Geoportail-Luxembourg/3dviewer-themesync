@@ -108,7 +108,7 @@ export default function lux3dviewerThemesyncPlugin(
   async function loadThemes(vcsUiApp: VcsUiApp): Promise<void> {
     const themesResponse: ThemesResponse = await fetch(
       pluginConfig.luxThemesUrl,
-      { credentials: 'include' },
+      { credentials: pluginConfig.credentials || 'same-origin' },
     ).then((response) => response.json());
     const { themes } = themesResponse;
     const terrainUrl = themesResponse.lux_3d.terrain_url;
