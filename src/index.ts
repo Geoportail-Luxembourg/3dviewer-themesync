@@ -1,5 +1,6 @@
 import { VcsModule } from '@vcmap/core';
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
+import { TrustedServers } from '@vcmap-cesium/engine';
 import { name, version, mapVersion } from '../package.json';
 import {
   LOCALES,
@@ -154,6 +155,11 @@ export default function lux3dviewerThemesyncPlugin(
     await setActiveBaselayer(vcsUiApp, pluginConfig, baselayers);
   }
 
+  function includeCredentialsForUrl(url: string): void {
+    const { hostname, port } = new URL(url);
+    TrustedServers.add(hostname, port ? parseInt(port, 10) : 443);
+  }
+
   return {
     get name(): string {
       return name;
@@ -165,6 +171,8 @@ export default function lux3dviewerThemesyncPlugin(
       return mapVersion;
     },
     async initialize(vcsUiApp: VcsUiApp): Promise<void> {
+      includeCredentialsForUrl(pluginConfig.luxOwsUrl);
+      includeCredentialsForUrl(pluginConfig.luxWmtsUrl);
       await loadThemes(vcsUiApp);
     },
     async reloadThemes(vcsUiApp: VcsUiApp): Promise<void> {
