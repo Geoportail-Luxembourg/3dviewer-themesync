@@ -1,5 +1,6 @@
 import { VcsModule } from '@vcmap/core';
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
+import { TrustedServers } from '@vcmap-cesium/engine';
 import { name, version, mapVersion } from '../package.json';
 import {
   LOCALES,
@@ -14,7 +15,9 @@ import { setActiveBaselayer, mapThemeToConfig } from './utils';
 
 type PluginState = Record<never, never>;
 
-type Lux3dviewerThemesyncPlugin = VcsPlugin<PluginConfig, PluginState>;
+type Lux3dviewerThemesyncPlugin = VcsPlugin<PluginConfig, PluginState> & {
+  reloadThemes(vcsUiApp: VcsUiApp): Promise<void>;
+};
 
 export default function lux3dviewerThemesyncPlugin(
   pluginConfig: PluginConfig,
@@ -103,6 +106,60 @@ export default function lux3dviewerThemesyncPlugin(
     await vcsUiApp.addModule(newModule);
   }
 
+  async function loadThemes(vcsUiApp: VcsUiApp): Promise<void> {
+    const cacheVersion = Date.now();
+    const themesUrl = `${pluginConfig.luxThemesUrl}&cache_version=${cacheVersion}`;
+    const themesResponse: ThemesResponse = await fetch(themesUrl, {
+      credentials: pluginConfig.credentials || 'same-origin',
+    }).then((response) => response.json());
+    const { themes } = themesResponse;
+    const terrainUrl = themesResponse.lux_3d.terrain_url;
+    const baselayers = themesResponse.background_layers.map(
+      (layer: ThemeItem) => ({
+        ...layer,
+        type: 'BaseLayer' as Ol2dLayerType,
+      }),
+    );
+
+    const themesFiltered = themes
+      .filter(
+        (theme) =>
+          theme.metadata?.ol3d_type ||
+          theme.metadata?.display_in_switcher === true,
+      )
+      .sort((a, b) => {
+        if (a.metadata?.ol3d_type) return -1;
+        if (b.metadata?.ol3d_type) return 1;
+        return 0;
+      });
+    themesFiltered.unshift({
+      id: -1,
+      name: 'basemap',
+      children: baselayers,
+    });
+    const translations = await Promise.all(
+      LOCALES.map((locale) =>
+        fetch(
+          `${pluginConfig.luxI18nUrl}/${locale}.json?_t=${Date.now()}`,
+        ).then((response) => response.json()),
+      ),
+    );
+    const flatTranslations = translations.reduce(
+      (acc, curr) => ({ ...acc, ...curr }),
+      {},
+    );
+
+    if (themesFiltered.length > 0) {
+      await addThemes(vcsUiApp, themesFiltered, terrainUrl, flatTranslations);
+    }
+    await setActiveBaselayer(vcsUiApp, pluginConfig, baselayers);
+  }
+
+  function includeCredentialsForUrl(url: string): void {
+    const { hostname, port } = new URL(url);
+    TrustedServers.add(hostname, port ? parseInt(port, 10) : 443);
+  }
+
   return {
     get name(): string {
       return name;
@@ -114,52 +171,13 @@ export default function lux3dviewerThemesyncPlugin(
       return mapVersion;
     },
     async initialize(vcsUiApp: VcsUiApp): Promise<void> {
-      // fetch and filter themes
-      const themesResponse: ThemesResponse = await fetch(
-        pluginConfig.luxThemesUrl,
-      ).then((response) => response.json());
-      const { themes } = themesResponse;
-      const terrainUrl = themesResponse.lux_3d.terrain_url;
-      const baselayers = themesResponse.background_layers.map(
-        (layer: ThemeItem) => ({
-          ...layer,
-          type: 'BaseLayer' as Ol2dLayerType,
-        }),
-      );
-
-      const themesFiltered = themes
-        .filter(
-          (theme) =>
-            theme.metadata?.ol3d_type ||
-            theme.metadata?.display_in_switcher === true,
-        )
-        .sort((a, b) => {
-          if (a.metadata?.ol3d_type) return -1;
-          if (b.metadata?.ol3d_type) return 1;
-          return 0;
-        });
-      themesFiltered.unshift({
-        id: -1,
-        name: 'basemap',
-        children: baselayers,
-      });
-      // fetch and flatten translations
-      const translations = await Promise.all(
-        LOCALES.map((locale) =>
-          fetch(
-            `${pluginConfig.luxI18nUrl}/${locale}.json?_t=${Date.now()}`,
-          ).then((response) => response.json()),
-        ),
-      );
-      const flatTranslations = translations.reduce(
-        (acc, curr) => ({ ...acc, ...curr }),
-        {},
-      );
-
-      if (themesFiltered.length > 0) {
-        await addThemes(vcsUiApp, themesFiltered, terrainUrl, flatTranslations);
-      }
-      await setActiveBaselayer(vcsUiApp, pluginConfig, baselayers);
+      includeCredentialsForUrl(pluginConfig.luxOwsUrl);
+      includeCredentialsForUrl(pluginConfig.luxWmtsUrl);
+      await loadThemes(vcsUiApp);
+    },
+    async reloadThemes(vcsUiApp: VcsUiApp): Promise<void> {
+      await vcsUiApp.removeModule('catalogConfig');
+      await loadThemes(vcsUiApp);
     },
     onVcsAppMounted(): void {},
     /**

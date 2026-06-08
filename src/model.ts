@@ -11,6 +11,7 @@ export type PluginConfig = {
   luxLegendUrl: string;
   luxDefaultBaselayer: string;
   luxGeonetworkUrl?: string;
+  credentials?: RequestCredentials;
 };
 
 export interface ThemeItem {

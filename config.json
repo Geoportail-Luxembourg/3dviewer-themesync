@@ -1,10 +1,11 @@
 {
   "name": "@geoportallux/lux-3dviewer-themesync",
-  "luxThemesUrl": "https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&cache_version=0&background=background",
+  "luxThemesUrl": "https://migration.geoportail.lu/themes?limit=30&partitionlimit=5&interface=main&background=background",
   "luxI18nUrl": "https://map.geoportail.lu/static/0",
   "luxOwsUrl": "https://wms.geoportail.lu/public_map_layers/service",
   "luxWmtsUrl": "https://wmts3.geoportail.lu/mapproxy_4_v3/wmts",
   "luxLegendUrl": "https://map.geoportail.lu/legends/get_html",
   "luxDefaultBaselayer": "orthogr_2013_global",
-  "luxGeonetworkUrl": "https://geocatalogue.geoportail.lu/geonetwork/srv"
+  "luxGeonetworkUrl": "https://geocatalogue.geoportail.lu/geonetwork/srv",
+  "credentials": "same-origin"
 }

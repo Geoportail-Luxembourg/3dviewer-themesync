@@ -18,6 +18,7 @@ These params (mostly URLs) must be indicated in the plugin config when deployed:
 - `luxWmtsUrl`- URL to WMTS
 - `luxLegendUrl` - URL to legends
 - `luxDefaultBaselayer` - name of the default baselayer to display
+- `credentials` - RequestCredentials property for theme fetching: `omit`, `same-origin` (default) or `include` (for dev only)
 
 ## Deploy plugin within map-ui
 
@@ -41,7 +42,8 @@ These params (mostly URLs) must be indicated in the plugin config when deployed:
       "luxOwsUrl": "...",
       "luxWmtsUrl": "...",
       "luxLegendUrl": "...",
-      "luxDefaultBaselayer": "..."
+      "luxDefaultBaselayer": "...",
+      "credentials": "...",
     },
 ```
 
