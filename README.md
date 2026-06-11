@@ -12,10 +12,11 @@ To further develop the plugin run: `npm start`
 
 These params (mostly URLs) must be indicated in the plugin config when deployed:
 
-- `luxThemesUrl`- URL to themes API
+- `luxThemesUrl`- URL to themes API (requests to this URL include credentials accoring to the credentials property in this config)
 - `luxI18nUrl`- URL to translations
-- `luxOwsUrl`- URL to OGC web services
-- `luxWmtsUrl`- URL to WMTS
+- `luxOwsUrl`- URL to OGC web services (thematic WMS and WMTS displayed as WMS to include fetaure info)
+- `luxWmtsUrl`- URL to WMTS (baselayers)
+- `luxProxyUrl` - URL to proxy service for protected layers (requests to this URL always include credentials)
 - `luxLegendUrl` - URL to legends
 - `luxDefaultBaselayer` - name of the default baselayer to display
 - `credentials` - RequestCredentials property for theme fetching: `omit`, `same-origin` (default) or `include` (for dev only)
@@ -41,6 +42,7 @@ These params (mostly URLs) must be indicated in the plugin config when deployed:
       "luxI18nUrl": "...",
       "luxOwsUrl": "...",
       "luxWmtsUrl": "...",
+      "luxProxyUrl": "...",
       "luxLegendUrl": "...",
       "luxDefaultBaselayer": "...",
       "credentials": "...",
