@@ -18,7 +18,8 @@ export type PluginConfig = {
 export interface ThemeItem {
   id: number;
   name: string;
-  layers?: string | number;
+  layer?: string;
+  layers?: number;
   source?: string;
   url?: string;
   style?: string | LayerStyle;

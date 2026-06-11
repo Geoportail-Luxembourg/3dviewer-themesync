@@ -97,7 +97,7 @@ export function mapThemeToConfig(
       name: themeItem.name,
       source: themeItem.source,
       style: themeItem.style,
-      layers: themeItem.layers,
+      layers: themeItem.url ? themeItem.id : themeItem.layers, // use layers as identifier when passing via proxy (see used url below)
       activeOnStartup: false,
       allowPicking: !!themeItem.metadata?.is_queryable,
       properties: {
@@ -153,7 +153,7 @@ export function mapThemeToConfig(
         layerConfig = {
           ...layerConfig,
           type: 'WMTSLayer',
-          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layers}/${themeItem.matrixSet}/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
+          url: `${pluginConfig.luxWmtsUrl}/${themeItem.layer}/${themeItem.matrixSet}/{TileMatrix}/{TileCol}/{TileRow}.${getFormat(themeItem.imageType)}`,
           format: themeItem.imageType,
           extent: {
             coordinates: [-180, -85, 180, 85],
@@ -170,7 +170,7 @@ export function mapThemeToConfig(
       case 'data':
         layerConfig = {
           ...layerConfig,
-          url: `${themeItem.url}/${themeItem.layers}/tileset.json`,
+          url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
           style: get3dStyle(themeItem),
           activeOnStartup: themeItem.metadata?.ol3d_defaultlayer || false,
@@ -181,7 +181,7 @@ export function mapThemeToConfig(
       case 'mesh':
         layerConfig = {
           ...layerConfig,
-          url: `${themeItem.url}/${themeItem.layers}/tileset.json`,
+          url: `${themeItem.url}/${themeItem.layer}/tileset.json`,
           type: 'CesiumTilesetLayer',
           // activeOnStartup: do not recover ol3d_defaultlayer value for mesh as exclusive terrain is already activeOnStartup
           offset: [0, 0, themeItem.metadata?.ol3d_options?.heightOffset || 0],
