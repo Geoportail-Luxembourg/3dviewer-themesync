@@ -18,7 +18,7 @@ export type PluginConfig = {
 export interface ThemeItem {
   id: number;
   name: string;
-  layer?: string;
+  layers?: string | number;
   source?: string;
   url?: string;
   style?: string | LayerStyle;
@@ -85,7 +85,7 @@ export interface LayerConfig {
   name: string;
   source?: string;
   style?: string | LayerStyle;
-  layers?: number;
+  layers?: string | number;
   activeOnStartup: boolean;
   allowPicking?: boolean;
   properties: Record<string, unknown>;
