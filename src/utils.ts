@@ -133,7 +133,9 @@ export function mapThemeToConfig(
         layerConfig = {
           ...layerConfig,
           type: 'WMSLayer',
-          url: pluginConfig.luxOwsUrl,
+          url: themeItem.url
+            ? pluginConfig.luxOwsUrl // used from config so WMTS layers also point to WMS url for getFeatureInfo
+            : pluginConfig.luxProxyUrl, // if no url in themes api, use proxy url (with credentials via TrustedServers)
           tilingSchema: 'mercator',
           featureInfo: {
             responseType: 'text/html',

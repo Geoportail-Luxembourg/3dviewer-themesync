@@ -171,8 +171,8 @@ export default function lux3dviewerThemesyncPlugin(
       return mapVersion;
     },
     async initialize(vcsUiApp: VcsUiApp): Promise<void> {
-      includeCredentialsForUrl(pluginConfig.luxOwsUrl);
-      includeCredentialsForUrl(pluginConfig.luxWmtsUrl);
+      // include credentials only for layers queried via proxy url
+      includeCredentialsForUrl(pluginConfig.luxProxyUrl);
       await loadThemes(vcsUiApp);
     },
     async reloadThemes(vcsUiApp: VcsUiApp): Promise<void> {

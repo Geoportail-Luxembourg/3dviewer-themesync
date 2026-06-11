@@ -4,6 +4,7 @@
   "luxI18nUrl": "https://map.geoportail.lu/static/0",
   "luxOwsUrl": "https://wms.geoportail.lu/public_map_layers/service",
   "luxWmtsUrl": "https://wmts3.geoportail.lu/mapproxy_4_v3/wmts",
+  "luxProxyUrl": "https://wmsproxy.geoportail.lu/ogcproxywms",
   "luxLegendUrl": "https://map.geoportail.lu/legends/get_html",
   "luxDefaultBaselayer": "orthogr_2013_global",
   "luxGeonetworkUrl": "https://geocatalogue.geoportail.lu/geonetwork/srv",

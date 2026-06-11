@@ -8,6 +8,7 @@ export type PluginConfig = {
   luxI18nUrl: string;
   luxOwsUrl: string;
   luxWmtsUrl: string;
+  luxProxyUrl: string;
   luxLegendUrl: string;
   luxDefaultBaselayer: string;
   luxGeonetworkUrl?: string;
