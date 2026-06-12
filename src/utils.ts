@@ -97,7 +97,7 @@ export function mapThemeToConfig(
       name: themeItem.name,
       source: themeItem.source,
       style: themeItem.style,
-      layers: themeItem.id,
+      layers: themeItem.url ? themeItem.id : themeItem.layers, // use layers as identifier when passing via proxy (see used url below)
       activeOnStartup: false,
       allowPicking: !!themeItem.metadata?.is_queryable,
       properties: {
@@ -133,7 +133,9 @@ export function mapThemeToConfig(
         layerConfig = {
           ...layerConfig,
           type: 'WMSLayer',
-          url: pluginConfig.luxOwsUrl,
+          url: themeItem.url
+            ? pluginConfig.luxOwsUrl // used from config so WMTS layers also point to WMS url for getFeatureInfo
+            : pluginConfig.luxProxyUrl, // if no url in themes api, use proxy url (with credentials via TrustedServers)
           tilingSchema: 'mercator',
           featureInfo: {
             responseType: 'text/html',

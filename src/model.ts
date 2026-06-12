@@ -8,6 +8,7 @@ export type PluginConfig = {
   luxI18nUrl: string;
   luxOwsUrl: string;
   luxWmtsUrl: string;
+  luxProxyUrl: string;
   luxLegendUrl: string;
   luxDefaultBaselayer: string;
   luxGeonetworkUrl?: string;
@@ -18,6 +19,7 @@ export interface ThemeItem {
   id: number;
   name: string;
   layer?: string;
+  layers?: number;
   source?: string;
   url?: string;
   style?: string | LayerStyle;
@@ -84,7 +86,7 @@ export interface LayerConfig {
   name: string;
   source?: string;
   style?: string | LayerStyle;
-  layers?: number;
+  layers?: string | number;
   activeOnStartup: boolean;
   allowPicking?: boolean;
   properties: Record<string, unknown>;
