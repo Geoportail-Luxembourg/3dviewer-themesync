@@ -97,7 +97,7 @@ export function mapThemeToConfig(
       name: themeItem.name,
       source: themeItem.source,
       style: themeItem.style,
-      layers: themeItem.url ? themeItem.id : themeItem.layers, // use layers as identifier when passing via proxy (see used url below)
+      layers: String(themeItem.url ? themeItem.id : themeItem.layers), // use layers as identifier when passing via proxy (see used url below)
       activeOnStartup: false,
       allowPicking: !!themeItem.metadata?.is_queryable,
       properties: {
