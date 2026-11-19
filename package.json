@@ -39,7 +39,8 @@
     "./dist": "./dist/index.js"
   },
   "repository": {
-    "url": "https://github.com/Geoportail-Luxembourg/3dviewer-themesync"
+    "type": "git",
+    "url": "git+https://github.com/Geoportail-Luxembourg/3dviewer-themesync.git"
   },
   "eslintIgnore": [
     "node_modules",
