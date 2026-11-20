@@ -82,6 +82,7 @@ export function mapThemeToConfig(
   translations: Record<string, Record<string, string>>,
   type3D?: Ol3dLayerType,
   parentName?: string,
+  displayInContentTree = true,
 ): void {
   const isLayer =
     themeItem &&
@@ -224,7 +225,10 @@ export function mapThemeToConfig(
     contentTreeItem.infoUrl = `${pluginConfig.luxGeonetworkUrl}/${isoLang2To3(vcsUiApp.locale)}/catalog.search#/metadata/${themeItem.metadata?.metadata_id}`;
   }
 
-  moduleConfig.contentTree.push(contentTreeItem);
+  // layers of hidden themes are reachable by URL state only, as in the 2D portal
+  if (displayInContentTree) {
+    moduleConfig.contentTree.push(contentTreeItem);
+  }
 
   // fill i18n
   function getTranslatedLayers(locale: string): Record<string, object> {
@@ -258,6 +262,7 @@ export function mapThemeToConfig(
         translations,
         type3D,
         subParentName,
+        displayInContentTree,
       );
     });
   }

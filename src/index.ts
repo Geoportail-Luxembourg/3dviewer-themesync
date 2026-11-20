@@ -30,6 +30,7 @@ export default function lux3dviewerThemesyncPlugin(
   async function addThemes(
     vcsUiApp: VcsUiApp,
     themes: Theme[],
+    hiddenThemes: Theme[],
     terrainUrl: string,
     translations: Record<string, Record<string, string>>,
   ): Promise<void> {
@@ -101,6 +102,18 @@ export default function lux3dviewerThemesyncPlugin(
         theme.metadata?.ol3d_type,
       );
     });
+    hiddenThemes.forEach((theme: Theme) => {
+      mapThemeToConfig(
+        vcsUiApp,
+        pluginConfig,
+        moduleConfig,
+        theme as ThemeItem,
+        translations,
+        undefined,
+        undefined,
+        false,
+      );
+    });
 
     const newModule = new VcsModule(moduleConfig);
     await vcsUiApp.addModule(newModule);
@@ -121,17 +134,14 @@ export default function lux3dviewerThemesyncPlugin(
       }),
     );
 
-    const themesFiltered = themes
-      .filter(
-        (theme) =>
-          theme.metadata?.ol3d_type ||
-          theme.metadata?.display_in_switcher === true,
-      )
-      .sort((a, b) => {
-        if (a.metadata?.ol3d_type) return -1;
-        if (b.metadata?.ol3d_type) return 1;
-        return 0;
-      });
+    const displayInContentTree = (theme: Theme): boolean =>
+      !!theme.metadata?.ol3d_type ||
+      theme.metadata?.display_in_switcher === true;
+    const themesFiltered = themes.filter(displayInContentTree).sort((a, b) => {
+      if (a.metadata?.ol3d_type) return -1;
+      if (b.metadata?.ol3d_type) return 1;
+      return 0;
+    });
     themesFiltered.unshift({
       id: -1,
       name: 'basemap',
@@ -150,7 +160,13 @@ export default function lux3dviewerThemesyncPlugin(
     );
 
     if (themesFiltered.length > 0) {
-      await addThemes(vcsUiApp, themesFiltered, terrainUrl, flatTranslations);
+      await addThemes(
+        vcsUiApp,
+        themesFiltered,
+        themes.filter((theme) => !displayInContentTree(theme)),
+        terrainUrl,
+        flatTranslations,
+      );
     }
     await setActiveBaselayer(vcsUiApp, pluginConfig, baselayers);
   }
